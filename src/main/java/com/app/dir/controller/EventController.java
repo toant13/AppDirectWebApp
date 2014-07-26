@@ -5,7 +5,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 
+import com.app.dir.domain.Event;
+import com.app.dir.domain.EventResult;
 import com.app.dir.event.EventHandler;
 
 
@@ -19,13 +22,18 @@ public class EventController {
 		
 		//1) extract url
 		//2) call get to url
+		// *handler error here
 		//3) call event handler with xml from url
 		//4) get EventResult, post back to appdirect
 		
+		RestTemplate template = new RestTemplate();
 		
+		Event event = eventHandler.getEvent(template, token);
+		EventResult eventResult = eventHandler.processEvent(event);
 		
-		model.addAttribute("message", "post works: " + token);
-		System.out.println(token);
+		eventHandler.sendEventResults(template, event.getReturnUrl(), eventResult);
+		
+		model.addAttribute("message", "Great success: " + eventResult.getMessage());		
 		return "index";
 	
 	}

@@ -1,7 +1,10 @@
 package com.app.dir.event;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.springframework.web.client.RestTemplate;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
@@ -29,6 +32,16 @@ public class EventHandler {
 			}
 		}
 		return eventProcessor.processEvent(event);
+	}
+	
+	public Event getEvent(RestTemplate template, String url){
+		Event event = template.getForObject(url, Event.class);
+		return event;
+	}
+	
+	public URI sendEventResults(RestTemplate template, String url, EventResult eventResult){
+		URI results = template.postForLocation(url, eventResult);
+		return results;
 	}
 
 }
