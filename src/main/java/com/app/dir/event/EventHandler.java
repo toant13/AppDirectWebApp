@@ -12,6 +12,7 @@ import com.app.dir.event.processors.CancelSubscriptionEventProcessor;
 import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
+import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 
 public class EventHandler {
 
@@ -24,6 +25,7 @@ public class EventHandler {
 		eventProcessors.add(new OrderSubscriptionEventProcessor());
 		eventProcessors.add(new ChangeSubscriptionEventProcessor());
 		eventProcessors.add(new CancelSubscriptionEventProcessor());
+		eventProcessors.add(new StatusSubscriptionEventProcessor());
 	}
 
 	//TODO: update this to make sure coming from correct endpoint
