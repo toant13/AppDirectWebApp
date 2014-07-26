@@ -41,7 +41,7 @@ public class EventController {
 		return eventResult;
 	}
 
-	@RequestMapping(value = "/change", method = RequestMethod.POST)
+	@RequestMapping(value = "/change", method = RequestMethod.GET)
 	public @ResponseBody EventResult changeSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
