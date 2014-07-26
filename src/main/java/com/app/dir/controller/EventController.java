@@ -2,6 +2,7 @@ package com.app.dir.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,4 +44,12 @@ public class EventController {
 		return "index";
 	
 	}
+	
+	@RequestMapping(value = "/post/{name}", method = RequestMethod.POST)
+	public String welcomeName(@PathVariable String name, ModelMap model) {
+
+		model.addAttribute("message", "TESTING POST: " + name);
+		return "index";
+
+	}	
 }
