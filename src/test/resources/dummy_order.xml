@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<order>
+	<editionCode>BASIC</editionCode>
+	<item>
+		<quantity>10</quantity>
+		<unit>USER</unit>
+	</item>
+	<item>
+		<quantity>15</quantity>
+		<unit>MEGABYTE</unit>
+	</item>
+	<pricingDuration>MONTHLY</pricingDuration>
+</order>
+
+
