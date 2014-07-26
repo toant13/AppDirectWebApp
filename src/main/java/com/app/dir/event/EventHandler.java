@@ -8,6 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
+import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 
@@ -20,6 +21,7 @@ public class EventHandler {
 		
 		//Note: This would be done a way more dynamic using reflection. For now, it is static
 		eventProcessors.add(new OrderSubscriptionEventProcessor());
+		eventProcessors.add(new ChangeSubscriptionEventProcessor());
 	}
 
 	//TODO: update this to make sure coming from correct endpoint
