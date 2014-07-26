@@ -5,7 +5,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/")
@@ -29,15 +28,7 @@ public class BaseController {
 				+ name);
 		return "index";
 
-	}
+	}	
 	
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String orderSubscription(@RequestParam(value="url", required=true) String token, ModelMap model) {
-		
-		
-		model.addAttribute("message", "Boom bitch: " + token);
-		System.out.println(token);
-		return "index";
-	
-	}
+
 }
