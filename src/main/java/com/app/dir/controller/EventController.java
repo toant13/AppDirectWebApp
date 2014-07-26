@@ -19,7 +19,7 @@ import com.app.dir.event.EventHandler;
 public class EventController {
 	final private EventHandler eventHandler = new EventHandler();
 
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token,
 			ModelMap model) {
