@@ -1,1 +1,1 @@
-web: java -jar target/dependency/jetty-runner.jar target/AppDirectWebApp.war
+web: java $JAVA_OPTS -jar target/dependency/jetty-runner.jar --port $PORT target/AppDirectWebApp.war
