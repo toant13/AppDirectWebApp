@@ -22,8 +22,11 @@ public class EventHandler {
 		eventProcessors.add(new OrderSubscriptionEventProcessor());
 	}
 
+	//TODO: update this to make sure coming from correct endpoint
 	public EventResult processEvent(Event event) {
 		EventProcessor eventProcessor = null;
+		
+		System.out.println(event.getType());
 		
 		for(EventProcessor ep : eventProcessors){
 			if(event.getType().equals(ep.getEventType())){
