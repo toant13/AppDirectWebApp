@@ -1,9 +1,8 @@
 package com.app.dir.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,10 +17,14 @@ import com.app.dir.event.EventHandler;
 @RequestMapping("/")
 public class EventController {
 	final private EventHandler eventHandler = new EventHandler();
+	private static final Logger log = LoggerFactory
+			.getLogger(EventController.class);
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token) {
+
+		log.debug("Create Subscription Endpoint");
 
 		// 1) extract url
 		// 2) call get to url
@@ -33,9 +36,6 @@ public class EventController {
 
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
-
-
-
 
 		return eventResult;
 	}
@@ -44,6 +44,8 @@ public class EventController {
 	public @ResponseBody EventResult changeSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
+		log.debug("Change Subscription Endpoint");
+
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
@@ -55,15 +57,15 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-
-
 		return eventResult;
 	}
-	
+
 	@RequestMapping(value = "/cancel", method = RequestMethod.GET)
 	public @ResponseBody EventResult cancelSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
+		log.debug("Cancel Subscription Endpoint");
+
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
@@ -75,18 +77,15 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-
-
 		return eventResult;
 	}
-	
+
 	@RequestMapping(value = "/status", method = RequestMethod.GET)
 	public @ResponseBody EventResult statusSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
-		
-		System.out.println("status!!!");
-		
+		log.debug("Status Subscription Endpoint");
+
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
@@ -98,14 +97,7 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-		
-		
-
-
-
 		return eventResult;
 	}
-	
-	
 
 }

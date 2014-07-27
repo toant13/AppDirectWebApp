@@ -3,6 +3,8 @@ package com.app.dir.event;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.app.dir.domain.Event;
@@ -16,7 +18,9 @@ import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 public class EventHandler {
 
 	Collection<EventProcessor> eventProcessors;
-	
+	private static final Logger log = LoggerFactory
+			.getLogger(EventHandler.class);
+			
 	public EventHandler(){
 		eventProcessors = new ArrayList<EventProcessor>();
 		
@@ -39,7 +43,7 @@ public class EventHandler {
 				break;
 			}
 		}
-		System.out.println("chosen even type : " + eventProcessor.getEventType());
+		log.info("Event processor is for type: " + eventProcessor.getEventType());
 		return eventProcessor.processEvent(event);
 	}
 	
