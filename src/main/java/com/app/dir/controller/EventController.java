@@ -33,6 +33,9 @@ public class EventController {
 		// 3) call event handler with xml from url
 		// 4) get EventResult, post back to appdirect
 
+
+		
+
 		RestTemplate template = new RestTemplate();
 
 		Event event = eventHandler.getEvent(template, token);

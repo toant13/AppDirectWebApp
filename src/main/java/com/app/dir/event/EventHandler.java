@@ -1,7 +1,16 @@
 package com.app.dir.event;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +56,29 @@ public class EventHandler {
 		return eventProcessor.processEvent(event);
 	}
 	
-	public Event getEvent(RestTemplate template, String url){
-		Event event = template.getForObject(url, Event.class);
+	public Event getEvent(RestTemplate template, String urlString){
+		OAuthConsumer consumer = new DefaultOAuthConsumer("appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
+		
+		
+		
+		try {
+			URL url = new URL(urlString);
+			
+			HttpURLConnection request = (HttpURLConnection) url.openConnection();
+			consumer.sign(request);
+			request.connect();
+			
+			
+			String s = (String) request.getContent();
+			
+			log.debug("it should get this far: " + s);
+			
+		} catch (IOException | OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Event event = template.getForObject(urlString, Event.class);
 		return event;
 	}
 	
