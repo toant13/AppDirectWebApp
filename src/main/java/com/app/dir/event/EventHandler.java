@@ -71,7 +71,7 @@ public class EventHandler {
 			HttpURLConnection request = (HttpURLConnection) url.openConnection();
 			consumer.sign(request);
 			request.connect();
-			request.setRequestMethod("GET");	
+//			request.setRequestMethod("GET");	
 
 			log.debug("CONTENT TYPE IS: " + request.getContentType());
 			
