@@ -68,10 +68,10 @@ public class EventHandler {
 			consumer.sign(request);
 			request.connect();
 			
+			String s = request.getContentType();
+//			String s = (String) request.getContent();
 			
-			String s = (String) request.getContent();
-			
-			log.debug("it should get this far: " + s);
+			log.debug("it content type: " + s);
 			
 		} catch (IOException | OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException e) {
 			// TODO Auto-generated catch block
