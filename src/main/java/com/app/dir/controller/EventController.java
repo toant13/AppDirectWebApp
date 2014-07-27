@@ -3,6 +3,7 @@ package com.app.dir.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,10 +23,10 @@ public class EventController {
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
-			@RequestParam(value = "url", required = true) String token) {
+			@RequestParam(value = "url", required = true) String token, @RequestHeader("oauth_timestamp") String timeStamp) {
 
 		log.debug("Create Subscription Endpoint");
-
+		log.debug("Header is : " + timeStamp);
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
