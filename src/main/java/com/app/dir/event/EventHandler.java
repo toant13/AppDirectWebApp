@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,12 +29,18 @@ import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 
 public class EventHandler {
-
+	private Properties prop = new Properties();
 	Collection<EventProcessor> eventProcessors;
 	private static final Logger log = LoggerFactory
 			.getLogger(EventHandler.class);
 
 	public EventHandler() {
+		try {
+			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+		} catch (IOException e) {
+			log.error("Errorloading consumer.properties", e);
+		}
+		
 		eventProcessors = new ArrayList<EventProcessor>();
 
 		// Note: This would be done a way more dynamic using reflection or
@@ -62,7 +69,7 @@ public class EventHandler {
 	// TODO: clean up exceptions, add exceptions
 	public Event getEvent(String urlString) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, JAXBException {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
-				"appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
+				prop.getProperty("consumer-key"), prop.getProperty("consumer-secret"));
 
 		URL url = new URL(urlString);
 
