@@ -1,6 +1,5 @@
 package com.app.dir.event;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -49,9 +48,6 @@ public class EventHandler {
 		return event;
 	}
 	
-	public URI sendEventResults(RestTemplate template, String url, EventResult eventResult){
-		URI results = template.postForLocation(url, eventResult);
-		return results;
-	}
+
 
 }

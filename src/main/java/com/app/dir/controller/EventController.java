@@ -34,8 +34,7 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-		eventHandler.sendEventResults(template, event.getReturnUrl(),
-				eventResult);
+
 
 
 		return eventResult;
@@ -56,8 +55,7 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-		eventHandler.sendEventResults(template, event.getReturnUrl(),
-				eventResult);
+
 
 		return eventResult;
 	}
@@ -77,8 +75,7 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-		eventHandler.sendEventResults(template, event.getReturnUrl(),
-				eventResult);
+
 
 		return eventResult;
 	}
@@ -103,9 +100,6 @@ public class EventController {
 
 		
 		
-		//Where is the return url?
-//		eventHandler.sendEventResults(template, event.getReturnUrl(),
-//				eventResult);
 
 
 
