@@ -32,7 +32,7 @@ public class EventHandler {
 	public EventResult processEvent(Event event) {
 		EventProcessor eventProcessor = null;
 		
-		System.out.println(event.getType());
+		
 		
 		for(EventProcessor ep : eventProcessors){
 			if(event.getType().equals(ep.getEventType())){
