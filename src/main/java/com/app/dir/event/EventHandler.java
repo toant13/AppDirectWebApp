@@ -18,7 +18,6 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestTemplate;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
@@ -33,63 +32,51 @@ public class EventHandler {
 	Collection<EventProcessor> eventProcessors;
 	private static final Logger log = LoggerFactory
 			.getLogger(EventHandler.class);
-			
-	public EventHandler(){
+
+	public EventHandler() {
 		eventProcessors = new ArrayList<EventProcessor>();
-		
-		//Note: This would be done a way more dynamic using reflection or springs context files. For now, it is static
+
+		// Note: This would be done a way more dynamic using reflection or
+		// springs context files. For now, it is static
 		eventProcessors.add(new OrderSubscriptionEventProcessor());
 		eventProcessors.add(new ChangeSubscriptionEventProcessor());
 		eventProcessors.add(new CancelSubscriptionEventProcessor());
 		eventProcessors.add(new StatusSubscriptionEventProcessor());
 	}
 
-	//TODO: update this to make sure coming from correct endpoint
+	// TODO: update this to make sure coming from correct endpoint
 	public EventResult processEvent(Event event) {
 		EventProcessor eventProcessor = null;
-		
-		
-		
-		for(EventProcessor ep : eventProcessors){
-			if(event.getType().equals(ep.getEventType())){
+
+		for (EventProcessor ep : eventProcessors) {
+			if (event.getType().equals(ep.getEventType())) {
 				eventProcessor = ep;
 				break;
 			}
 		}
-		log.info("Event processor is for type: " + eventProcessor.getEventType());
+		log.info("Event processor is for type: "
+				+ eventProcessor.getEventType());
 		return eventProcessor.processEvent(event);
 	}
-	
-	public Event getEvent(RestTemplate template, String urlString){
-		OAuthConsumer consumer = new DefaultOAuthConsumer("appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
-		
-		
-		
-		try {
-			URL url = new URL(urlString);
-			
-			HttpURLConnection request = (HttpURLConnection) url.openConnection();
-			consumer.sign(request);
-			request.connect();
-//			request.setRequestMethod("GET");	
 
-			log.debug("CONTENT TYPE IS: " + request.getContentType());
-			
-			JAXBContext jc = JAXBContext.newInstance(Event.class);
-			InputStream xml = request.getInputStream();
-			Event event = (Event) jc.createUnmarshaller().unmarshal(xml);
-			
-			log.debug("AUTHORIZED TO GET XML: " + event.getCreator().getFirstName());
-			return event;
-			
-		} catch (IOException | OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException | JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	// TODO: clean up exceptions, add exceptions
+	public Event getEvent(String urlString) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, JAXBException {
+		OAuthConsumer consumer = new DefaultOAuthConsumer(
+				"appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
 
-		return null;
+		URL url = new URL(urlString);
+
+		HttpURLConnection request = (HttpURLConnection) url.openConnection();
+		consumer.sign(request);
+		request.connect();
+
+		JAXBContext jc = JAXBContext.newInstance(Event.class);
+		InputStream xml = request.getInputStream();
+		Event event = (Event) jc.createUnmarshaller().unmarshal(xml);
+
+		log.debug("AUTHORIZED TO GET XML: " + event.getCreator().getFirstName());
+		return event;
+
 	}
-	
-
 
 }

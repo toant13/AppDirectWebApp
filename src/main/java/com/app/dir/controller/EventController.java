@@ -1,14 +1,20 @@
 package com.app.dir.controller;
 
+import java.io.IOException;
+
+import javax.xml.bind.JAXBException;
+
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
@@ -26,7 +32,7 @@ public class EventController {
 			@RequestParam(value = "url", required = true) String token) {
 
 		log.debug("Create Subscription Endpoint");
-//		log.debug("Header is : " + timeStamp);
+
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
@@ -34,14 +40,24 @@ public class EventController {
 		// 4) get EventResult, post back to appdirect
 
 
+
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventResult eventResult = eventHandler.processEvent(event);
+
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
 		
-
-		RestTemplate template = new RestTemplate();
-
-		Event event = eventHandler.getEvent(template, token);
-		EventResult eventResult = eventHandler.processEvent(event);
-
-		return eventResult;
 	}
 
 	@RequestMapping(value = "/change", method = RequestMethod.GET)
@@ -50,18 +66,23 @@ public class EventController {
 
 		log.debug("Change Subscription Endpoint");
 
-		// 1) extract url
-		// 2) call get to url
-		// *handler error here
-		// 3) call event handler with xml from url
-		// 4) get EventResult, post back to appdirect
 
-		RestTemplate template = new RestTemplate();
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventResult eventResult = eventHandler.processEvent(event);
 
-		Event event = eventHandler.getEvent(template, token);
-		EventResult eventResult = eventHandler.processEvent(event);
-
-		return eventResult;
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
 	}
 
 	@RequestMapping(value = "/cancel", method = RequestMethod.GET)
@@ -70,38 +91,46 @@ public class EventController {
 
 		log.debug("Cancel Subscription Endpoint");
 
-		// 1) extract url
-		// 2) call get to url
-		// *handler error here
-		// 3) call event handler with xml from url
-		// 4) get EventResult, post back to appdirect
 
-		RestTemplate template = new RestTemplate();
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventResult eventResult = eventHandler.processEvent(event);
 
-		Event event = eventHandler.getEvent(template, token);
-		EventResult eventResult = eventHandler.processEvent(event);
-
-		return eventResult;
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
 	}
 
 	@RequestMapping(value = "/status", method = RequestMethod.GET)
 	public @ResponseBody EventResult statusSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
-		log.debug("Status Subscription Endpoint");
 
-		// 1) extract url
-		// 2) call get to url
-		// *handler error here
-		// 3) call event handler with xml from url
-		// 4) get EventResult, post back to appdirect
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventResult eventResult = eventHandler.processEvent(event);
 
-		RestTemplate template = new RestTemplate();
-
-		Event event = eventHandler.getEvent(template, token);
-		EventResult eventResult = eventHandler.processEvent(event);
-
-		return eventResult;
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
 	}
 
 }
