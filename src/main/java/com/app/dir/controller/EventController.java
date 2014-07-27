@@ -23,10 +23,10 @@ public class EventController {
 
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
-			@RequestParam(value = "url", required = true) String token, @RequestHeader("oauth_timestamp") String timeStamp) {
+			@RequestParam(value = "url", required = true) String token) {
 
 		log.debug("Create Subscription Endpoint");
-		log.debug("Header is : " + timeStamp);
+//		log.debug("Header is : " + timeStamp);
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
