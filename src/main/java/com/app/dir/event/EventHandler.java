@@ -1,10 +1,14 @@
 package com.app.dir.event;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
@@ -67,19 +71,23 @@ public class EventHandler {
 			HttpURLConnection request = (HttpURLConnection) url.openConnection();
 			consumer.sign(request);
 			request.connect();
+			request.setRequestMethod("GET");	
+
+			log.debug("CONTENT TYPE IS: " + request.getContentType());
 			
-			String s = request.getContentType();
-//			String s = (String) request.getContent();
+			JAXBContext jc = JAXBContext.newInstance(Event.class);
+			InputStream xml = request.getInputStream();
+			Event event = (Event) jc.createUnmarshaller().unmarshal(xml);
 			
-			log.debug("it content type: " + s);
+			log.debug("AUTHORIZED TO GET XML: " + event.getCreator().getFirstName());
+			return event;
 			
-		} catch (IOException | OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException e) {
+		} catch (IOException | OAuthMessageSignerException | OAuthExpectationFailedException | OAuthCommunicationException | JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		Event event = template.getForObject(urlString, Event.class);
-		return event;
+
+		return null;
 	}
 	
 
