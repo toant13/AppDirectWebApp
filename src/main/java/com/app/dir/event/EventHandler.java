@@ -40,6 +40,7 @@ public class EventHandler {
 				break;
 			}
 		}
+		System.out.println("chosen even type : " + eventProcessor.getEventType());
 		return eventProcessor.processEvent(event);
 	}
 	

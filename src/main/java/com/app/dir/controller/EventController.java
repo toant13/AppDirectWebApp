@@ -87,6 +87,9 @@ public class EventController {
 	public @ResponseBody EventResult statusSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
+		
+		System.out.println("status!!!");
+		
 		// 1) extract url
 		// 2) call get to url
 		// *handler error here
@@ -98,8 +101,13 @@ public class EventController {
 		Event event = eventHandler.getEvent(template, token);
 		EventResult eventResult = eventHandler.processEvent(event);
 
-		eventHandler.sendEventResults(template, event.getReturnUrl(),
-				eventResult);
+		
+		
+		//Where is the return url?
+//		eventHandler.sendEventResults(template, event.getReturnUrl(),
+//				eventResult);
+
+
 
 		return eventResult;
 	}
