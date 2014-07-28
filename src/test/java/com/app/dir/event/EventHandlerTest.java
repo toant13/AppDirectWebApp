@@ -83,7 +83,7 @@ public class EventHandlerTest {
 		
 		EventHandler eventHandler = new EventHandler();
 		
-		eventHandler.processEvent(event);
+//		eventHandler.processEvent(event);
 	}
 
 }
