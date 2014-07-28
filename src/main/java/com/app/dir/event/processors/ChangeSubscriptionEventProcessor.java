@@ -2,6 +2,7 @@ package com.app.dir.event.processors;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
+import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
 
 public class ChangeSubscriptionEventProcessor implements EventProcessor {
 
@@ -11,7 +12,7 @@ public class ChangeSubscriptionEventProcessor implements EventProcessor {
 	}
 
 	@Override
-	public EventResult processEvent(Event event) {
+	public EventResult processEvent(Event event, SubscriptionAccountDao accountDao) {
 		// store new app buyer information somewhere
 
 		EventResult eventResult = new EventResult();

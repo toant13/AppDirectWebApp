@@ -27,6 +27,7 @@ import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
+import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
 
 public class EventHandler {
 	private Properties prop = new Properties();
@@ -52,7 +53,7 @@ public class EventHandler {
 	}
 
 	// TODO: update this to make sure coming from correct endpoint
-	public EventResult processEvent(Event event) {
+	public EventResult processEvent(Event event, SubscriptionAccountDao dao) {
 		EventProcessor eventProcessor = null;
 
 		for (EventProcessor ep : eventProcessors) {
@@ -63,7 +64,7 @@ public class EventHandler {
 		}
 		log.info("Event processor is for type: "
 				+ eventProcessor.getEventType());
-		return eventProcessor.processEvent(event);
+		return eventProcessor.processEvent(event, dao);
 	}
 
 	// TODO: clean up exceptions, add exceptions

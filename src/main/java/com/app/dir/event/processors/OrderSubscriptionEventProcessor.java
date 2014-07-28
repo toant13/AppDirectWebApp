@@ -1,10 +1,16 @@
 package com.app.dir.event.processors;
 
+import java.util.Date;
+import java.util.UUID;
+
+import javax.persistence.EntityExistsException;
+
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
+import com.app.dir.persistence.domain.SubscriptionAccount;
+import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
 
-
-public class OrderSubscriptionEventProcessor implements EventProcessor{
+public class OrderSubscriptionEventProcessor implements EventProcessor {
 
 	@Override
 	public String getEventType() {
@@ -12,21 +18,30 @@ public class OrderSubscriptionEventProcessor implements EventProcessor{
 	}
 
 	@Override
-	public EventResult processEvent(Event event) {
-		//store new app buyer information somewhere
+	public EventResult processEvent(Event event, SubscriptionAccountDao accountDao) {
+		SubscriptionAccount account = new SubscriptionAccount();
+		
+		account.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
+		account.setCreationDate(new Date());
+		account.setEditionCode(event.getPayload().getOrder().getEditionCode());
+		account.setFirstName(event.getCreator().getFirstName());
+		account.setLastName(event.getCreator().getLastName());
+		
+		String accountID = UUID.randomUUID().toString();
+		account.setId(accountID);
 		
 		EventResult eventResult = new EventResult();
-		
-		eventResult.setSuccess(true);
-		eventResult.setMessage("Account creation successful");
-		eventResult.setAccountIdentifier("new-account-identifier");
-		
+		try {
+			accountDao.persist(account);
+			eventResult.setSuccess(true);
+			eventResult.setMessage("Account creation successful");
+			eventResult.setAccountIdentifier(accountID);
+		} catch(EntityExistsException e){
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Account creation failed");		
+		}
 		
 		return eventResult;
 	}
-	
-	
 
-
-	
 }

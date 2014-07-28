@@ -1,6 +1,9 @@
 package com.app.dir.controller;
 
+
+
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.xml.bind.JAXBException;
 
@@ -10,41 +13,43 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.EventHandler;
+import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
 
 @Controller
 @RequestMapping("/")
-public class EventController {
+public class SubscriptionController {
 	final private EventHandler eventHandler = new EventHandler();
 	private static final Logger log = LoggerFactory
-			.getLogger(EventController.class);
+			.getLogger(SubscriptionController.class);
+	
+	@Autowired
+    private SubscriptionAccountDao subAccountDAO;
 
+	
+	
+	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
-			@RequestParam(value = "url", required = true) String token) {
+			@RequestParam(value = "url", required = true) String token) throws ParseException {
 
 		log.debug("Create Subscription Endpoint");
-
-		// 1) extract url
-		// 2) call get to url
-		// *handler error here
-		// 3) call event handler with xml from url
-		// 4) get EventResult, post back to appdirect
-
-
 
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event);
+			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -60,6 +65,13 @@ public class EventController {
 		
 	}
 
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public ModelAndView listAccount(ModelMap model) {
+		log.debug("Account List Endpoint");
+		return new ModelAndView("accounts", "subscriptionAccountDao", subAccountDAO);
+	}
+	
+	
 	@RequestMapping(value = "/change", method = RequestMethod.GET)
 	public @ResponseBody EventResult changeSubscription(
 			@RequestParam(value = "url", required = true) String token) {
@@ -70,7 +82,7 @@ public class EventController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event);
+			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -95,7 +107,7 @@ public class EventController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event);
+			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -118,7 +130,7 @@ public class EventController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event);
+			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException

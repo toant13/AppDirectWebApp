@@ -16,6 +16,16 @@
 		<slf4j.version>1.7.7</slf4j.version>
 	</properties>
 
+
+	<repositories>
+		<repository>
+			<id>objectdb</id>
+			<name>ObjectDB Repository</name>
+			<url>http://m2.objectdb.com</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
 
 		<!-- logging -->
@@ -80,6 +90,49 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- PROTOTYPING -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.10</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.objectdb</groupId>
+			<artifactId>objectdb</artifactId>
+			<version>2.2.5</version>
+		</dependency>
+
+
+
+
+
 	</dependencies>
 	<build>
 		<finalName>AppDirectWebApp</finalName>
