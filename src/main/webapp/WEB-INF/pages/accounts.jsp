@@ -15,17 +15,21 @@
     <body>	
     	<h1>LIST OF SUBSCRIPTION ACCOUNTS</h1>
         <hr><ol> 
-        <% for (SubscriptionAccount subAccount : subscriptionAccountDao.getAllAccounts()) { %>
-            <%-- <li> <%= account %> </li> --%>
-             <li><p> 
-             	<b>Account Identifier:</b> <%= subAccount.getId() %> </br> 
-             	<b>First Name:</b> <%= subAccount.getFirstName() %></br>
-             	<b>Last Name:</b> <%= subAccount.getLastName() %></br>
-             	<b>Edition:</b> <%= subAccount.getEditionCode() %></br>
-             	
-             </p></li>
-            
-        <% } %>
+        <% if (subscriptionAccountDao.getAllAccounts().size()>0) { %>
+	        <% for (SubscriptionAccount subAccount : subscriptionAccountDao.getAllAccounts()) { %>
+	            <%-- <li> <%= account %> </li> --%>
+	             <li><p> 
+	             	<b>Account Identifier:</b> <%= subAccount.getId() %> </br> 
+	             	<b>First Name:</b> <%= subAccount.getFirstName() %></br>
+	             	<b>Last Name:</b> <%= subAccount.getLastName() %></br>
+	             	<b>Edition:</b> <%= subAccount.getEditionCode() %></br>
+	             	
+	             </p></li>
+	            
+	        <% } %>
+	    <% } else { %>    
+	    	<h3> There are currently no account subscriptions.</h3>
+	    <% } %>
         </ol><hr>
 
 	</body>
