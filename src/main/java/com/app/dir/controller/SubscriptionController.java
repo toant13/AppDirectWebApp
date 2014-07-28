@@ -38,8 +38,6 @@ public class SubscriptionController {
     private SubscriptionAccountDao subAccountDAO;
 
 	
-	
-	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token) throws ParseException {

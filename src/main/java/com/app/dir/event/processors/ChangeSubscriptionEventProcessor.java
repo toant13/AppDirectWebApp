@@ -16,11 +16,18 @@ public class ChangeSubscriptionEventProcessor implements EventProcessor {
 		// store new app buyer information somewhere
 
 		EventResult eventResult = new EventResult();
-
-		eventResult.setSuccess(true);
-		eventResult.setMessage("Account changed successfully");
-		eventResult.setAccountIdentifier("account name");
-
+		
+		
+		try{
+			accountDao.changeAccount(event);
+			eventResult.setSuccess(true);
+			eventResult.setMessage("Edition code successfully changed to: " + event.getPayload().getOrder().getEditionCode());
+		}catch(IllegalArgumentException e){
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Account changed unsuccessfully. Account does not exist.");
+		}
+		
+		
 		return eventResult;
 	}
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<payload>
+	<account>
+		<accountIdentifier>MY_ACCOUNT</accountIdentifier>
+	</account>
+	<order>
+		<editionCode>BASIC</editionCode>
+		<item>
+			<quantity>10</quantity>
+			<unit>USER</unit>
+		</item>
+		<item>
+			<quantity>15</quantity>
+			<unit>MEGABYTE</unit>
+		</item>
+	</order>
+</payload>
+

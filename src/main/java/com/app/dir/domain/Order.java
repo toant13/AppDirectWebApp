@@ -61,14 +61,21 @@ public class Order {
 			return true;
 		} else {
 			final Order order = (Order) obj;
-			if (!(this.editionCode.equals(order.editionCode))) {
-				return false;
+			if(this.editionCode !=null && order.editionCode !=null){
+				if (!(this.editionCode.equals(order.editionCode))) {
+					return false;
+				}
 			}
 			if (!(this.items.equals(order.items))) {
 				return false;
 			}
-			if (!(this.pricingDuration.equals(order.pricingDuration))) {
-				return false;
+			if(this.pricingDuration !=null && order.pricingDuration !=null){	
+				if (!(this.pricingDuration.equals(order.pricingDuration))) {
+					return false;
+				}
+			}else
+			{
+				return true;
 			}
 
 			return true;

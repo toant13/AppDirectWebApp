@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"company","configuration","order" })
+@XmlType(propOrder = {"company","configuration","account","order" })
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="payload")
 public class Payload {
@@ -17,6 +17,19 @@ public class Payload {
 	@XmlElement(name="configuration")
 	private Configuration configuration;
 	
+	@XmlElement(name="account")
+	private Account account;
+	
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+
+
 	@XmlElement(name="order")
 	private Order order;
 
