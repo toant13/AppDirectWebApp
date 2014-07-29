@@ -27,6 +27,14 @@ public class Payload {
 		return account;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public void setAccount(Account account) {
 		this.account = account;
 	}

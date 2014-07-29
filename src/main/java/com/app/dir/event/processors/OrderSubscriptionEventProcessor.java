@@ -1,12 +1,14 @@
 package com.app.dir.event.processors;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.EntityExistsException;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
+import com.app.dir.domain.Item;
 import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
@@ -26,6 +28,15 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 		account.setEditionCode(event.getPayload().getOrder().getEditionCode());
 		account.setFirstName(event.getCreator().getFirstName());
 		account.setLastName(event.getCreator().getLastName());
+		
+		List<Item> itemList = event.getPayload().getOrder().getItems();
+		
+		for(Item item : itemList){
+			if(item.getUnit().equals("USER")){
+				account.setMaxUsers(item.getQuantity());
+				break;
+			}
+		}
 		
 		String accountID = UUID.randomUUID().toString();
 		account.setId(accountID);

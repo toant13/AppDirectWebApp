@@ -24,15 +24,15 @@
 	            <%-- <li> <%= account %> </li> --%>
 	             <li><p> 
 	             	<b>Account Identifier:</b> <%= subAccount.getId() %> </br> 
-	             	<b>First Name:</b> <%= subAccount.getFirstName() %></br>
-	             	<b>Last Name:</b> <%= subAccount.getLastName() %></br>
+	             	<b>Creator First Name:</b> <%= subAccount.getFirstName() %></br>
+	             	<b>Creator Last Name:</b> <%= subAccount.getLastName() %></br>
 	             	<b>Edition:</b> <%= subAccount.getEditionCode() %></br>
-	             	
+	             	<b>Current Number of Assigned Users: </b><%= subAccount.getUsers().size() %></br>
 	             </p></li>
 	            
 	        <% } %>
 	    <% } else { %>    
-	    	<h3> There are currently no account subscriptions.</h3>
+	    	<h3> There are currently no subscriptions for this app.</h3>
 	    <% } %>
         </ol><hr>
 

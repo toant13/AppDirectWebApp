@@ -19,7 +19,7 @@ public class ChangeSubscriptionEventProcessor implements EventProcessor {
 		
 		
 		try{
-			accountDao.changeAccount(event);
+			accountDao.changeEditionCode(event);
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Edition code successfully changed to: " + event.getPayload().getOrder().getEditionCode());
 		}catch(IllegalArgumentException e){

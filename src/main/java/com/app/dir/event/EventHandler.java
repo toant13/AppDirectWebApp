@@ -27,11 +27,12 @@ import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
+import com.app.dir.event.processors.UserAssignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class EventHandler {
 	private Properties prop = new Properties();
-	Collection<EventProcessor> eventProcessors;
+
 	private static final Logger log = LoggerFactory
 			.getLogger(EventHandler.class);
 
@@ -41,29 +42,11 @@ public class EventHandler {
 		} catch (IOException e) {
 			log.error("Errorloading consumer.properties", e);
 		}
-		
-		eventProcessors = new ArrayList<EventProcessor>();
 
-		// Note: This would be done a way more dynamic using reflection or
-		// springs context files. For now, it is static
-		eventProcessors.add(new OrderSubscriptionEventProcessor());
-		eventProcessors.add(new ChangeSubscriptionEventProcessor());
-		eventProcessors.add(new CancelSubscriptionEventProcessor());
-		eventProcessors.add(new StatusSubscriptionEventProcessor());
 	}
 
 	// TODO: update this to make sure coming from correct endpoint
-	public EventResult processEvent(Event event, SubscriptionDao dao) {
-		EventProcessor eventProcessor = null;
-
-		for (EventProcessor ep : eventProcessors) {
-			if (event.getType().equals(ep.getEventType())) {
-				eventProcessor = ep;
-				break;
-			}
-		}
-		log.info("Event processor is for type: "
-				+ eventProcessor.getEventType());
+	public EventResult processEvent(Event event, SubscriptionDao dao, EventProcessor eventProcessor) {
 		return eventProcessor.processEvent(event, dao);
 	}
 

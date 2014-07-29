@@ -25,6 +25,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.EventHandler;
+import com.app.dir.event.processors.CancelSubscriptionEventProcessor;
+import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
+import com.app.dir.event.processors.EventProcessor;
+import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
+import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
+import com.app.dir.event.processors.UserAssignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 @Controller
@@ -47,7 +53,8 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
+			EventProcessor ev = new OrderSubscriptionEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -62,12 +69,6 @@ public class SubscriptionController {
 		}
 		
 	}
-
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView listAccount(ModelMap model) {
-		log.debug("Account List Endpoint");
-		return new ModelAndView("subscriptions", "subscriptionDao", subscriptionDAO);
-	}
 	
 	
 	@RequestMapping(value = "/change", method = RequestMethod.GET)
@@ -80,7 +81,8 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
+			EventProcessor ev = new ChangeSubscriptionEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO,ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -105,7 +107,8 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
+			EventProcessor ev = new CancelSubscriptionEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -128,7 +131,9 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
+			
+			EventProcessor ev = new StatusSubscriptionEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -141,6 +146,41 @@ public class SubscriptionController {
 			eventResult.setErrorCode("CONFIGURATION_ERROR");
 			return eventResult;
 		}
+	}
+	
+	
+	@RequestMapping(value = "/assign", method = RequestMethod.GET)
+	public @ResponseBody EventResult assignUser(
+			@RequestParam(value = "url", required = true) String token) {
+
+		log.debug("Assign User to subscription");
+
+
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventProcessor ev = new UserAssignmentEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			log.debug("BEFORE assignUser RETURN");
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
+	}
+	
+	
+	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public ModelAndView listAccount(ModelMap model) {
+		log.debug("Account List Endpoint");
+		return new ModelAndView("subscriptions", "subscriptionDao", subscriptionDAO);
 	}
 
 }

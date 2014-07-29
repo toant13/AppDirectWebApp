@@ -1,15 +1,18 @@
 package com.app.dir.persistence.domain;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Subscription {
 
 	@Id
+	@Column(name="ACCOUNT_IDENTIFIER")
 	private String id;
 
 	@Column(name = "FIRST_NAME")
@@ -17,6 +20,7 @@ public class Subscription {
 
 	@Column(name = "LAST_NAME")
 	private String lastName;
+
 
 	@Column(name = "EDITION_CODE")
 	private String editionCode;
@@ -29,8 +33,29 @@ public class Subscription {
 
 	@Column(name = "END_DATE")
 	private Date endDate;
-
 	
+	@Column(name = "MAX_USERS")
+	private int maxUsers;
+	
+	@OneToMany(mappedBy="subscription")
+	private Set<User> users;
+	
+
+    public Set<User> getUsers() { return users; }
+	
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
+
+	public int getMaxUsers() {
+		return maxUsers;
+	}
+
+	public void setMaxUsers(int maxUsers) {
+		this.maxUsers = maxUsers;
+	}
+
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -86,8 +111,6 @@ public class Subscription {
 	public void setCompanyUUID(String companyUUID) {
 		this.companyUUID = companyUUID;
 	}
-
-	
 
 	
 	@Override
