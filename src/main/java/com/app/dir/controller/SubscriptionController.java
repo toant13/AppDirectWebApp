@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.EventHandler;
-import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
+import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 @Controller
 @RequestMapping("/")
@@ -35,7 +35,7 @@ public class SubscriptionController {
 			.getLogger(SubscriptionController.class);
 	
 	@Autowired
-    private SubscriptionAccountDao subAccountDAO;
+    private SubscriptionDao subscriptionDAO;
 
 	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
@@ -47,7 +47,7 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -66,7 +66,7 @@ public class SubscriptionController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView listAccount(ModelMap model) {
 		log.debug("Account List Endpoint");
-		return new ModelAndView("accounts", "subscriptionAccountDao", subAccountDAO);
+		return new ModelAndView("subscriptions", "subscriptionDao", subscriptionDAO);
 	}
 	
 	
@@ -80,7 +80,7 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -105,7 +105,7 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
@@ -128,7 +128,7 @@ public class SubscriptionController {
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			EventResult eventResult = eventHandler.processEvent(event, subAccountDAO);
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException

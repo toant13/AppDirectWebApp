@@ -27,7 +27,7 @@ import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
-import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
+import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class EventHandler {
 	private Properties prop = new Properties();
@@ -53,7 +53,7 @@ public class EventHandler {
 	}
 
 	// TODO: update this to make sure coming from correct endpoint
-	public EventResult processEvent(Event event, SubscriptionAccountDao dao) {
+	public EventResult processEvent(Event event, SubscriptionDao dao) {
 		EventProcessor eventProcessor = null;
 
 		for (EventProcessor ep : eventProcessors) {

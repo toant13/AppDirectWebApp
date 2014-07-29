@@ -4,12 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class SubscriptionAccount {
+public class Subscription {
 
 	@Id
 	private String id;
@@ -25,6 +23,12 @@ public class SubscriptionAccount {
 
 	@Column(name = "COMPANY_UUID")
 	private String companyUUID;
+	
+	@Column(name = "CREATION_DATE")
+	private Date creationDate;
+
+	@Column(name = "END_DATE")
+	private Date endDate;
 
 	
 	public Date getCreationDate() {
@@ -83,11 +87,7 @@ public class SubscriptionAccount {
 		this.companyUUID = companyUUID;
 	}
 
-	@Column(name = "CREATION_DATE")
-	private Date creationDate;
-
-	@Column(name = "END_DATE")
-	private Date endDate;
+	
 
 	
 	@Override

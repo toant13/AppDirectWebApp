@@ -14,18 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.Payload;
-import com.app.dir.persistence.domain.SubscriptionAccount;
+import com.app.dir.persistence.domain.Subscription;
 
 @Component
-public class SubscriptionAccountDao {
+public class SubscriptionDao {
 	private static final Logger log = LoggerFactory
-			.getLogger(SubscriptionAccountDao.class);
+			.getLogger(SubscriptionDao.class);
 
 	@PersistenceContext
 	private EntityManager em;
 
 	@Transactional
-	public void persist(SubscriptionAccount account) {
+	public void persist(Subscription account) {
 		log.debug("Contains account: " + em.contains(account));
 		if (!em.contains(account)) {
 			em.persist(account);
@@ -34,14 +34,14 @@ public class SubscriptionAccountDao {
 
 	}
 
-	public void remove(SubscriptionAccount account) {
+	public void remove(Subscription account) {
 		em.remove(account);
 	}
 
-	public List<SubscriptionAccount> getAllAccounts() {
-		TypedQuery<SubscriptionAccount> query = em.createQuery(
-				"SELECT g FROM SubscriptionAccount g ORDER BY g.id",
-				SubscriptionAccount.class);
+	public List<Subscription> getAllAccounts() {
+		TypedQuery<Subscription> query = em.createQuery(
+				"SELECT g FROM Subscription g ORDER BY g.id",
+				Subscription.class);
 		return query.getResultList();
 	}
 
@@ -50,17 +50,14 @@ public class SubscriptionAccountDao {
 			throws IllegalArgumentException {
 		EntityManager eme = em.getEntityManagerFactory().createEntityManager();
 		log.debug("updateAccount method");
-		TypedQuery<SubscriptionAccount> query = eme
+		TypedQuery<Subscription> query = eme
 				.createQuery(
-						"SELECT g FROM SubscriptionAccount g WHERE g.id=\""
-								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", SubscriptionAccount.class);
-//		TypedQuery<SubscriptionAccount> query = eme
-//		.createQuery(
-//				"SELECT g FROM SubscriptionAccount g WHERE g.firstName=\""
-//						+ event.getCreator().getFirstName() + "\"", SubscriptionAccount.class);
+						"SELECT g FROM Subscription g WHERE g.id=\""
+								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
+//		TypedQuery<Subscription> query = eme.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
 
 		
-		SubscriptionAccount result = query.getSingleResult();
+		Subscription result = query.getSingleResult();
 
 		if (result != null) {
 			eme.getTransaction().begin();

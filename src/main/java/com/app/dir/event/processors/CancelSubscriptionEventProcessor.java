@@ -2,7 +2,7 @@ package com.app.dir.event.processors;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
-import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
+import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class CancelSubscriptionEventProcessor implements EventProcessor {
 	
@@ -12,7 +12,7 @@ public class CancelSubscriptionEventProcessor implements EventProcessor {
 	}
 
 	@Override
-	public EventResult processEvent(Event event, SubscriptionAccountDao accountDao) {
+	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
 		// delete new app buyer information somewhere
 
 		EventResult eventResult = new EventResult();

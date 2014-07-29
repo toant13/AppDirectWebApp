@@ -7,8 +7,8 @@ import javax.persistence.EntityExistsException;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
-import com.app.dir.persistence.domain.SubscriptionAccount;
-import com.app.dir.persistence.domain.dao.SubscriptionAccountDao;
+import com.app.dir.persistence.domain.Subscription;
+import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class OrderSubscriptionEventProcessor implements EventProcessor {
 
@@ -18,8 +18,8 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 	}
 
 	@Override
-	public EventResult processEvent(Event event, SubscriptionAccountDao accountDao) {
-		SubscriptionAccount account = new SubscriptionAccount();
+	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
+		Subscription account = new Subscription();
 		
 		account.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
 		account.setCreationDate(new Date());
