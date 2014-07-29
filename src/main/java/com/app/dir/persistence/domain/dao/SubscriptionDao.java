@@ -55,11 +55,11 @@ public class SubscriptionDao {
 		log.debug("updateAccount method");
 		
 		
-//		TypedQuery<Subscription> query = eme
-//				.createQuery(
-//						"SELECT g FROM Subscription g WHERE g.id=\""
-//								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
-		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
+		TypedQuery<Subscription> query = entityManager
+				.createQuery(
+						"SELECT g FROM Subscription g WHERE g.id=\""
+								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
+//		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
 
 		
 		Subscription result = query.getSingleResult();
@@ -79,11 +79,11 @@ public class SubscriptionDao {
 			throws IllegalArgumentException {
 		EntityManager entityManager = em.getEntityManagerFactory().createEntityManager();
 		log.debug("assignUser method");
-//		TypedQuery<Subscription> query = entityManager
-//				.createQuery(
-//						"SELECT g FROM Subscription g WHERE g.id=\""
-//								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
-		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
+		TypedQuery<Subscription> query = entityManager
+				.createQuery(
+						"SELECT g FROM Subscription g WHERE g.id=\""
+								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
+//		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
 		Subscription result = query.getSingleResult();
 
 		
@@ -96,7 +96,6 @@ public class SubscriptionDao {
 			if(result.getUsers().size() < result.getMaxUsers()) {
 				log.debug("CURRENT SIZE: " + result.getUsers().size());
 				log.debug("MAX CAPACITY: " + result.getMaxUsers());
-				log.debug("CREATING USER");
 				entityManager.getTransaction().begin();
 				User user = new User();
 				user.setFirstName(event.getPayload().getUser().getFirstName());
@@ -108,8 +107,6 @@ public class SubscriptionDao {
 				entityManager.getTransaction().commit();
 			} else {
 				log.error("Number of users for this subscription have already reach full capacity" );
-				log.debug("CURRENT SIZE: " + result.getUsers().size());
-				log.debug("MAX CAPACITY: " + result.getMaxUsers());
 				throw new IllegalArgumentException("Number of users for this subscription have already reach full capacity");
 			}
 			
