@@ -22,6 +22,17 @@ public class User {
 
 	@Column(name = "OPEN_ID")
 	private String openId;
+	
+	@Column(name = "EMAIL")
+	private String email;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	@ManyToOne
     @JoinColumn(name="id")

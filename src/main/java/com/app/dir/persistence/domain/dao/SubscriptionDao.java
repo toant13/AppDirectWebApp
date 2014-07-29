@@ -43,9 +43,10 @@ public class SubscriptionDao {
 									.getAccountIdentifier() + "\"",
 					Subscription.class);
 
-			// TypedQuery<Subscription> query =
-			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
-			// event.getCreator().getFirstName() + "\"", Subscription.class);
+//			TypedQuery<Subscription> query = entityManager.createQuery(
+//					"SELECT g FROM Subscription g WHERE g.firstName=\""
+//							+ event.getCreator().getFirstName() + "\"",
+//					Subscription.class);
 
 			Subscription result = query.getSingleResult();
 
@@ -66,6 +67,13 @@ public class SubscriptionDao {
 				Subscription.class);
 		return query.getResultList();
 	}
+	
+	public List<User> getAllUsers() {
+		TypedQuery<User> query = em.createQuery(
+				"SELECT g FROM User g ORDER BY g.UserID",
+				User.class);
+		return query.getResultList();
+	}
 
 	@Transactional
 	public void changeEditionCode(Event event) throws IllegalArgumentException {
@@ -74,15 +82,16 @@ public class SubscriptionDao {
 		log.debug("updateAccount method");
 
 		try {
-			TypedQuery<Subscription> query = entityManager.createQuery(
-					"SELECT g FROM Subscription g WHERE g.id=\""
-							+ event.getPayload().getAccount()
-									.getAccountIdentifier() + "\"",
-					Subscription.class);
+			 TypedQuery<Subscription> query = entityManager.createQuery(
+			 "SELECT g FROM Subscription g WHERE g.id=\""
+			 + event.getPayload().getAccount()
+			 .getAccountIdentifier() + "\"",
+			 Subscription.class);
 
-			// TypedQuery<Subscription> query =
-			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
-			// event.getCreator().getFirstName() + "\"", Subscription.class);
+			// TypedQuery<Subscription> query = entityManager.createQuery(
+			// "SELECT g FROM Subscription g WHERE g.firstName=\""
+			// + event.getCreator().getFirstName() + "\"",
+			// Subscription.class);
 
 			Subscription result = query.getSingleResult();
 			entityManager.getTransaction().begin();
@@ -109,9 +118,12 @@ public class SubscriptionDao {
 							+ event.getPayload().getAccount()
 									.getAccountIdentifier() + "\"",
 					Subscription.class);
-			// TypedQuery<Subscription> query =
-			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
-			// event.getCreator().getFirstName() + "\"", Subscription.class);
+			
+//			TypedQuery<Subscription> query = entityManager.createQuery(
+//					"SELECT g FROM Subscription g WHERE g.firstName=\""
+//							+ event.getCreator().getFirstName() + "\"",
+//					Subscription.class);
+			
 			Subscription result = query.getSingleResult();
 
 			log.debug("Transaction beginning");
@@ -125,6 +137,7 @@ public class SubscriptionDao {
 				user.setLastName(event.getPayload().getUser().getLastName());
 				user.setOpenId(event.getPayload().getUser().getOpenId());
 				user.setUserID(UUID.randomUUID().toString());
+				user.setEmail(event.getPayload().getUser().getEmail());
 				user.setSubscription(result);
 				entityManager.persist(user);
 				entityManager.getTransaction().commit();

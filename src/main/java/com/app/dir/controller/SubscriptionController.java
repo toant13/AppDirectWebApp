@@ -178,9 +178,15 @@ public class SubscriptionController {
 	
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView listAccount(ModelMap model) {
+	public ModelAndView listAccounts(ModelMap model) {
 		log.debug("Account List Endpoint");
 		return new ModelAndView("subscriptions", "subscriptionDao", subscriptionDAO);
+	}
+	
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public ModelAndView listUsers(ModelMap model) {
+		log.debug("Account List Endpoint");
+		return new ModelAndView("users", "subscriptionDao", subscriptionDAO);
 	}
 
 }
