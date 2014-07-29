@@ -6,14 +6,20 @@ import java.util.UUID;
 
 import javax.persistence.EntityExistsException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.domain.Item;
+import com.app.dir.event.EventHandler;
 import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class OrderSubscriptionEventProcessor implements EventProcessor {
-
+	private static final Logger log = LoggerFactory
+			.getLogger(OrderSubscriptionEventProcessor.class);
+	
 	@Override
 	public String getEventType() {
 		return "SUBSCRIPTION_ORDER";
@@ -21,6 +27,9 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
+		log.debug("processing order subscription");
+		
+		
 		Subscription account = new Subscription();
 		
 		account.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
@@ -30,11 +39,12 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 		account.setLastName(event.getCreator().getLastName());
 		
 		List<Item> itemList = event.getPayload().getOrder().getItems();
-		
-		for(Item item : itemList){
-			if(item.getUnit().equals("USER")){
-				account.setMaxUsers(item.getQuantity());
-				break;
+		if(itemList != null){
+			for(Item item : itemList){
+				if(item.getUnit().equals("USER")){
+					account.setMaxUsers(item.getQuantity());
+					break;
+				}
 			}
 		}
 		

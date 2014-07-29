@@ -52,7 +52,9 @@ public class SubscriptionController {
 
 		Event event;
 		try {
+			log.debug("beginning to parse xml");
 			event = eventHandler.getEvent(token);
+			log.debug("beginning to process order");
 			EventProcessor ev = new OrderSubscriptionEventProcessor();
 			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
 
@@ -173,6 +175,36 @@ public class SubscriptionController {
 			eventResult.setErrorCode("CONFIGURATION_ERROR");
 			return eventResult;
 		}
+	}
+	
+	@RequestMapping(value = "/unassign", method = RequestMethod.GET)
+	public @ResponseBody EventResult unassignUser(
+			@RequestParam(value = "url", required = true) String token) {
+
+		log.debug("Unassign User From Subscription");
+
+
+//		Event event;
+//		try {
+//			event = eventHandler.getEvent(token);
+//			EventProcessor ev = new UserAssignmentEventProcessor();
+//			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+//			log.debug("BEFORE assignUser RETURN");
+//			return eventResult;
+//		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+//				| OAuthCommunicationException | IOException | JAXBException e) {
+//			
+//			log.error("Error processing event", e);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error processing event");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
+		EventResult eventResult = new EventResult();
+		eventResult.setSuccess(true);
+		eventResult.setMessage("TESTING ENDPOINT");
+		return eventResult;
 	}
 	
 	

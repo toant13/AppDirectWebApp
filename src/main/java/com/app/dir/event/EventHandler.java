@@ -55,14 +55,18 @@ public class EventHandler {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
 				prop.getProperty("consumer-key"), prop.getProperty("consumer-secret"));
 
+		log.debug("GETTING XML FROM APP DIRECT");
+		
 		URL url = new URL(urlString);
 
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 		consumer.sign(request);
 		request.connect();
-
+		
 		JAXBContext jc = JAXBContext.newInstance(Event.class);
+		log.debug("CONNECTING GETTING INPUT STREAM");
 		InputStream xml = request.getInputStream();
+		log.debug("GOT ITITITI");
 		Event event = (Event) jc.createUnmarshaller().unmarshal(xml);
 
 		log.debug("AUTHORIZED TO GET XML: " + event.getCreator().getFirstName());
