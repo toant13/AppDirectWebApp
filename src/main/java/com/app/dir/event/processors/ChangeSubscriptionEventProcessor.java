@@ -24,7 +24,8 @@ public class ChangeSubscriptionEventProcessor implements EventProcessor {
 			eventResult.setMessage("Edition code successfully changed to: " + event.getPayload().getOrder().getEditionCode());
 		}catch(IllegalArgumentException e){
 			eventResult.setSuccess(false);
-			eventResult.setMessage("Account changed unsuccessfully. Account does not exist.");
+			eventResult.setErrorCode("ACCOUNT_NOT_FOUND");
+			eventResult.setMessage("Account changed unsuccessfully because: " + e.getMessage());
 		}
 		
 		

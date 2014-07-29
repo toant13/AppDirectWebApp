@@ -1,9 +1,6 @@
 package com.app.dir.persistence.domain.dao;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -34,11 +31,33 @@ public class SubscriptionDao {
 			em.persist(account);
 
 		}
-
 	}
 
-	public void remove(Subscription account) {
-		em.remove(account);
+	public void remove(Event event) throws IllegalArgumentException {
+		EntityManager entityManager = em.getEntityManagerFactory()
+				.createEntityManager();
+		try {
+			TypedQuery<Subscription> query = entityManager.createQuery(
+					"SELECT g FROM Subscription g WHERE g.id=\""
+							+ event.getPayload().getAccount()
+									.getAccountIdentifier() + "\"",
+					Subscription.class);
+
+			// TypedQuery<Subscription> query =
+			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
+			// event.getCreator().getFirstName() + "\"", Subscription.class);
+
+			Subscription result = query.getSingleResult();
+
+			entityManager.getTransaction().begin();
+			entityManager.remove(result);
+			entityManager.getTransaction().commit();
+
+		} catch (Exception e) {
+			log.error("Error occurred during query");
+			throw new IllegalArgumentException("Subscription not found");
+		}
+
 	}
 
 	public List<Subscription> getAllAccounts() {
@@ -49,51 +68,55 @@ public class SubscriptionDao {
 	}
 
 	@Transactional
-	public void changeEditionCode(Event event)
-			throws IllegalArgumentException {
-		EntityManager entityManager = em.getEntityManagerFactory().createEntityManager();
+	public void changeEditionCode(Event event) throws IllegalArgumentException {
+		EntityManager entityManager = em.getEntityManagerFactory()
+				.createEntityManager();
 		log.debug("updateAccount method");
-		
-		
-		TypedQuery<Subscription> query = entityManager
-				.createQuery(
-						"SELECT g FROM Subscription g WHERE g.id=\""
-								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
-//		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
 
-		
-		Subscription result = query.getSingleResult();
+		try {
+			TypedQuery<Subscription> query = entityManager.createQuery(
+					"SELECT g FROM Subscription g WHERE g.id=\""
+							+ event.getPayload().getAccount()
+									.getAccountIdentifier() + "\"",
+					Subscription.class);
 
-		if (result != null) {
+			// TypedQuery<Subscription> query =
+			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
+			// event.getCreator().getFirstName() + "\"", Subscription.class);
+
+			Subscription result = query.getSingleResult();
 			entityManager.getTransaction().begin();
-			result.setEditionCode(event.getPayload().getOrder().getEditionCode());
+			result.setEditionCode(event.getPayload().getOrder()
+					.getEditionCode());
 			entityManager.getTransaction().commit();
-		} else {
+
+		} catch (Exception e) {
+			log.error("Error occurred during query");
 			throw new IllegalArgumentException("Subscription not found");
 		}
 
 	}
-	
-	@Transactional
-	public void assignUser(Event event)
-			throws IllegalArgumentException {
-		EntityManager entityManager = em.getEntityManagerFactory().createEntityManager();
-		log.debug("assignUser method");
-		TypedQuery<Subscription> query = entityManager
-				.createQuery(
-						"SELECT g FROM Subscription g WHERE g.id=\""
-								+ event.getPayload().getAccount().getAccountIdentifier() + "\"", Subscription.class);
-//		TypedQuery<Subscription> query = entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+ event.getCreator().getFirstName() + "\"", Subscription.class);
-		Subscription result = query.getSingleResult();
 
-		
-		
-		if (result != null) {
+	@Transactional
+	public void assignUser(Event event) throws IllegalArgumentException, IllegalStateException {
+		EntityManager entityManager = em.getEntityManagerFactory()
+				.createEntityManager();
+		log.debug("assignUser method");
+
+		try {
+			TypedQuery<Subscription> query = entityManager.createQuery(
+					"SELECT g FROM Subscription g WHERE g.id=\""
+							+ event.getPayload().getAccount()
+									.getAccountIdentifier() + "\"",
+					Subscription.class);
+			// TypedQuery<Subscription> query =
+			// entityManager.createQuery("SELECT g FROM Subscription g WHERE g.firstName=\""+
+			// event.getCreator().getFirstName() + "\"", Subscription.class);
+			Subscription result = query.getSingleResult();
+
 			log.debug("Transaction beginning");
-			
-			
-			
-			if(result.getUsers().size() < result.getMaxUsers()) {
+
+			if (result.getUsers().size() < result.getMaxUsers()) {
 				log.debug("CURRENT SIZE: " + result.getUsers().size());
 				log.debug("MAX CAPACITY: " + result.getMaxUsers());
 				entityManager.getTransaction().begin();
@@ -106,13 +129,12 @@ public class SubscriptionDao {
 				entityManager.persist(user);
 				entityManager.getTransaction().commit();
 			} else {
-				log.error("Number of users for this subscription have already reach full capacity" );
-				throw new IllegalArgumentException("Number of users for this subscription have already reach full capacity");
+				log.error("Number of users for this subscription have already reach full capacity");
+				throw new IllegalStateException(
+						"Number of users for this subscription have already reach full capacity");
 			}
-			
-		
-		} else {
-			log.error("Account not found");
+		} catch (Exception e) {
+			log.error("Error occurred during query");
 			throw new IllegalArgumentException("Subscription not found");
 		}
 	}

@@ -19,19 +19,21 @@ public class UserAssignmentEventProcessor implements EventProcessor {
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
 		EventResult eventResult = new EventResult();
-
+		log.debug("invoking processEvent method");
+		
 		try {
 			accountDao.assignUser(event);
-			
-			log.debug("FINISHED ASSIGNING USER");
-			
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Successfully Assigned: "
 					+ event.getPayload().getUser().getFirstName() + " " + event.getPayload().getUser().getLastName());
 		} catch (IllegalArgumentException e) {
 			eventResult.setSuccess(false);
+			eventResult.setErrorCode("ACCOUNT_NOT_FOUND");
+			eventResult.setMessage("Failed to assign user because: " + e.getMessage());
+		} catch (IllegalStateException e1) {
+			eventResult.setSuccess(false);
 			eventResult.setErrorCode("MAX_USERS_REACHED");
-			eventResult.setMessage(e.getMessage());
+			eventResult.setMessage("Failed to assign user because: " + e1.getMessage());
 		}
 
 		return eventResult;

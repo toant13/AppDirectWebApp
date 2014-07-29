@@ -5,7 +5,7 @@ import com.app.dir.domain.EventResult;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class CancelSubscriptionEventProcessor implements EventProcessor {
-	
+
 	@Override
 	public String getEventType() {
 		return "SUBSCRIPTION_CANCEL";
@@ -17,9 +17,16 @@ public class CancelSubscriptionEventProcessor implements EventProcessor {
 
 		EventResult eventResult = new EventResult();
 
-		eventResult.setSuccess(true);
-		eventResult.setMessage("Account canceled successful");
-		eventResult.setAccountIdentifier("new-account-identifier");
+		try {
+			accountDao.remove(event);
+			eventResult.setSuccess(true);
+			eventResult.setMessage("Subscription canceled successfully");
+			eventResult.setAccountIdentifier("new-account-identifier");
+		} catch (IllegalArgumentException e) {
+			eventResult.setSuccess(false);
+			eventResult.setErrorCode("ACCOUNT_NOT_FOUND");
+			eventResult.setMessage("Failed to cancel subscription because: " + e.getMessage());
+		}
 
 		return eventResult;
 	}
