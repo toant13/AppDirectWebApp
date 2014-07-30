@@ -1,13 +1,7 @@
 package com.app.dir.controller;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
@@ -18,8 +12,6 @@ import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.signature.QueryStringSigningStrategy;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +50,7 @@ public class SubscriptionController {
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token,
 			@RequestHeader(value = "Authorization") String test,
-			HttpServletRequest req) {
+			HttpServletRequest req) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
 
 		log.debug("Create Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
