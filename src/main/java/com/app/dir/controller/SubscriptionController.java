@@ -1,16 +1,24 @@
 package com.app.dir.controller;
 
-
-
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,30 +49,46 @@ public class SubscriptionController {
 	final private EventHandler eventHandler = new EventHandler();
 	private static final Logger log = LoggerFactory
 			.getLogger(SubscriptionController.class);
-	
-	@Autowired
-    private SubscriptionDao subscriptionDAO;
 
-	
+	@Autowired
+	private SubscriptionDao subscriptionDAO;
+
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
-			@RequestParam(value = "url", required = true) String token, @RequestHeader(value="Authorization") String test) throws ParseException {
+			@RequestParam(value = "url", required = true) String token,
+			@RequestHeader(value = "Authorization") String test,
+			HttpServletRequest req) throws ParseException, IOException,
+			NoSuchAlgorithmException, InvalidKeyException {
 
 		log.debug("Create Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
 		log.debug("HEADER!!!: " + test);
+
+		String apiSecret = "WF0JZQZ1hJE8N7JN";
+		String postBody = IOUtils.toString(req.getInputStream(), "UTF-8");
+
+		byte[] keyBytes = apiSecret.getBytes();
+		SecretKey signingKey = new SecretKeySpec(keyBytes, "HmacSHA1");
+		Mac mac = Mac.getInstance("HmacSHA1");
+		mac.init(signingKey);
+		String mySignature = new String(Base64.encodeBase64((mac
+				.doFinal(postBody.getBytes("UTF-8")))));
+		
+		log.debug("MYSIGNATURE!!!: " + mySignature);
+
 		Event event;
 		try {
 			log.debug("beginning to parse xml");
 			event = eventHandler.getEvent(token);
 			log.debug("beginning to process order");
 			EventProcessor ev = new OrderSubscriptionEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -72,10 +96,9 @@ public class SubscriptionController {
 			eventResult.setErrorCode("CONFIGURATION_ERROR");
 			return eventResult;
 		}
-		
+
 	}
-	
-	
+
 	@RequestMapping(value = "/change", method = RequestMethod.GET)
 	public @ResponseBody EventResult changeSubscription(
 			@RequestParam(value = "url", required = true) String token) {
@@ -87,12 +110,13 @@ public class SubscriptionController {
 		try {
 			event = eventHandler.getEvent(token);
 			EventProcessor ev = new ChangeSubscriptionEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO,ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -113,12 +137,13 @@ public class SubscriptionController {
 		try {
 			event = eventHandler.getEvent(token);
 			EventProcessor ev = new CancelSubscriptionEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -132,18 +157,18 @@ public class SubscriptionController {
 	public @ResponseBody EventResult statusSubscription(
 			@RequestParam(value = "url", required = true) String token) {
 
-
 		Event event;
 		try {
 			event = eventHandler.getEvent(token);
-			
+
 			EventProcessor ev = new StatusSubscriptionEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -152,8 +177,7 @@ public class SubscriptionController {
 			return eventResult;
 		}
 	}
-	
-	
+
 	@RequestMapping(value = "/assign", method = RequestMethod.GET)
 	public @ResponseBody EventResult assignUser(
 			@RequestParam(value = "url", required = true) String token) {
@@ -165,12 +189,13 @@ public class SubscriptionController {
 		try {
 			event = eventHandler.getEvent(token);
 			EventProcessor ev = new UserAssignmentEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 			log.debug("BEFORE assignUser RETURN");
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -179,7 +204,7 @@ public class SubscriptionController {
 			return eventResult;
 		}
 	}
-	
+
 	@RequestMapping(value = "/unassign", method = RequestMethod.GET)
 	public @ResponseBody EventResult unassignUser(
 			@RequestParam(value = "url", required = true) String token) {
@@ -190,12 +215,13 @@ public class SubscriptionController {
 		try {
 			event = eventHandler.getEvent(token);
 			EventProcessor ev = new UserUnassignmentEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			EventResult eventResult = eventHandler.processEvent(event,
+					subscriptionDAO, ev);
 			log.debug("BEFORE assignUser RETURN");
 			return eventResult;
 		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
 				| OAuthCommunicationException | IOException | JAXBException e) {
-			
+
 			log.error("Error processing event", e);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
@@ -204,15 +230,14 @@ public class SubscriptionController {
 			return eventResult;
 		}
 	}
-	
-	
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView listAccounts(ModelMap model) {
 		log.debug("Account List Endpoint");
-		return new ModelAndView("subscriptions", "subscriptionDao", subscriptionDAO);
+		return new ModelAndView("subscriptions", "subscriptionDao",
+				subscriptionDAO);
 	}
-	
+
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public ModelAndView listUsers(ModelMap model) {
 		log.debug("Account List Endpoint");
