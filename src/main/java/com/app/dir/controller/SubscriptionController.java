@@ -16,6 +16,7 @@ import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.signature.QueryStringSigningStrategy;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -57,24 +58,18 @@ public class SubscriptionController {
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token,
 			@RequestHeader(value = "Authorization") String test,
-			HttpServletRequest req) throws ParseException, IOException,
-			NoSuchAlgorithmException, InvalidKeyException {
+			HttpServletRequest req) {
 
 		log.debug("Create Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
 		log.debug("HEADER!!!: " + test);
 
-		String apiSecret = "WF0JZQZ1hJE8N7JN";
-		String postBody = IOUtils.toString(req.getInputStream(), "UTF-8");
+		OAuthConsumer consumer = new DefaultOAuthConsumer(
+				"appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
+		consumer.setSigningStrategy(new QueryStringSigningStrategy());
+		String signedUrl = consumer.sign(token);
 
-		byte[] keyBytes = apiSecret.getBytes();
-		SecretKey signingKey = new SecretKeySpec(keyBytes, "HmacSHA1");
-		Mac mac = Mac.getInstance("HmacSHA1");
-		mac.init(signingKey);
-		String mySignature = new String(Base64.encodeBase64((mac
-				.doFinal(postBody.getBytes("UTF-8")))));
-		
-		log.debug("MYSIGNATURE!!!: " + mySignature);
+		log.debug("SIGNATURE!!!: " + signedUrl);
 
 		Event event;
 		try {

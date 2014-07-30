@@ -59,7 +59,6 @@ public class EventHandler {
 		JAXBContext jc = JAXBContext.newInstance(Event.class);
 		log.debug("CONNECTING GETTING INPUT STREAM");
 		InputStream xml = request.getInputStream();
-		log.debug("GOT ITITITI");
 		Event event = (Event) jc.createUnmarshaller().unmarshal(xml);
 
 		log.debug("AUTHORIZED TO GET XML: " + event.getCreator().getFirstName());
