@@ -48,7 +48,7 @@ public class SubscriptionController {
 	
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
-			@RequestParam(value = "url", required = true) String token, @RequestHeader(value="oauth_consumer_key") String test) throws ParseException {
+			@RequestParam(value = "url", required = true) String token, @RequestHeader(value="Authorization") String test) throws ParseException {
 
 		log.debug("Create Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
