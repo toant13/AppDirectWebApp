@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.domain.Item;
-import com.app.dir.event.EventHandler;
 import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
@@ -46,6 +45,8 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 					break;
 				}
 			}
+		} else {
+			account.setMaxUsers(Integer.MAX_VALUE);
 		}
 		
 		String accountID = UUID.randomUUID().toString();
