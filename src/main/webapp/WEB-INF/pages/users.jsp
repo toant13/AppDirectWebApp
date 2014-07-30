@@ -34,6 +34,5 @@
 	    	<h3> There are currently no users using app.</h3>
 	    <% } %>
         </ol><hr>
-
 	</body>
 </html>

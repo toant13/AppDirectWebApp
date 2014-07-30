@@ -13,12 +13,8 @@ public class StatusSubscriptionEventProcessor implements EventProcessor {
 
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
-		// delete new app buyer information somewhere
-
 		EventResult eventResult = new EventResult();
-
 		eventResult.setSuccess(true);
-
 		return eventResult;
 	}
 

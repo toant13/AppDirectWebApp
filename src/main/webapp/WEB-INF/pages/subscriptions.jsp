@@ -35,6 +35,7 @@
 	    	<h3> There are currently no subscriptions for this app.</h3>
 	    <% } %>
         </ol><hr>
+        <h4>Click <a href="users">here</a> to view list of all users</h4>
 
 	</body>
 </html>
