@@ -13,6 +13,7 @@ import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.domain.Item;
 import com.app.dir.persistence.domain.Subscription;
+import com.app.dir.persistence.domain.User;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class OrderSubscriptionEventProcessor implements EventProcessor {
@@ -29,38 +30,50 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 		log.debug("processing order subscription");
 		
 		
-		Subscription account = new Subscription();
+		Subscription subscription = new Subscription();
 		
-		account.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
-		account.setCreationDate(new Date());
-		account.setEditionCode(event.getPayload().getOrder().getEditionCode());
-		account.setFirstName(event.getCreator().getFirstName());
-		account.setLastName(event.getCreator().getLastName());
+		subscription.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
+		subscription.setCreationDate(new Date());
+		subscription.setEditionCode(event.getPayload().getOrder().getEditionCode());
+		subscription.setFirstName(event.getCreator().getFirstName());
+		subscription.setLastName(event.getCreator().getLastName());
 		
 		List<Item> itemList = event.getPayload().getOrder().getItems();
 		if(itemList != null){
 			for(Item item : itemList){
 				if(item.getUnit().equals("USER")){
-					account.setMaxUsers(item.getQuantity());
+					subscription.setMaxUsers(item.getQuantity());
 					break;
 				}
 			}
 		} else {
-			account.setMaxUsers(Integer.MAX_VALUE);
+			subscription.setMaxUsers(Integer.MAX_VALUE);
 		}
 		
 		String accountID = UUID.randomUUID().toString();
-		account.setId(accountID);
+		subscription.setId(accountID);
 		
 		EventResult eventResult = new EventResult();
 		try {
-			accountDao.persist(account);
+			
+			//Assign creator of subscription as a user
+			User user = new User();
+			user.setEmail(event.getCreator().getEmail());
+			user.setFirstName(event.getCreator().getFirstName());
+			user.setLastName(event.getCreator().getLastName());
+			user.setOpenId(event.getCreator().getOpenId());
+			user.setUserID(UUID.randomUUID().toString());
+			user.setSubscription(subscription);
+			
+			accountDao.createSubscription(subscription, user);
 			eventResult.setSuccess(true);
-			eventResult.setMessage("Account creation successful");
+			eventResult.setMessage("Subscription creation successful");
 			eventResult.setAccountIdentifier(accountID);
+	
+			
 		} catch(EntityExistsException e){
 			eventResult.setSuccess(false);
-			eventResult.setMessage("Account creation failed");		
+			eventResult.setMessage("Subscription creation failed");		
 		}
 		
 		return eventResult;

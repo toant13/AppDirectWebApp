@@ -18,7 +18,7 @@ public class CancelSubscriptionEventProcessor implements EventProcessor {
 		EventResult eventResult = new EventResult();
 
 		try {
-			accountDao.remove(event);
+			accountDao.removeSubscription(event.getPayload());
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Subscription canceled successfully");
 			eventResult.setAccountIdentifier("new-account-identifier");
