@@ -31,6 +31,7 @@ import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 import com.app.dir.event.processors.UserAssignmentEventProcessor;
+import com.app.dir.event.processors.UserUnassignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 @Controller
@@ -184,28 +185,23 @@ public class SubscriptionController {
 
 		log.debug("Unassign User From Subscription");
 
-
-//		Event event;
-//		try {
-//			event = eventHandler.getEvent(token);
-//			EventProcessor ev = new UserAssignmentEventProcessor();
-//			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
-//			log.debug("BEFORE assignUser RETURN");
-//			return eventResult;
-//		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
-//				| OAuthCommunicationException | IOException | JAXBException e) {
-//			
-//			log.error("Error processing event", e);
-//			EventResult eventResult = new EventResult();
-//			eventResult.setSuccess(false);
-//			eventResult.setMessage("Error processing event");
-//			eventResult.setErrorCode("CONFIGURATION_ERROR");
-//			return eventResult;
-//		}
-		EventResult eventResult = new EventResult();
-		eventResult.setSuccess(true);
-		eventResult.setMessage("TESTING ENDPOINT");
-		return eventResult;
+		Event event;
+		try {
+			event = eventHandler.getEvent(token);
+			EventProcessor ev = new UserUnassignmentEventProcessor();
+			EventResult eventResult = eventHandler.processEvent(event, subscriptionDAO, ev);
+			log.debug("BEFORE assignUser RETURN");
+			return eventResult;
+		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
+				| OAuthCommunicationException | IOException | JAXBException e) {
+			
+			log.error("Error processing event", e);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error processing event");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
 	}
 	
 	

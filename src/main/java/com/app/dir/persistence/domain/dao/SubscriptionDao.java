@@ -45,29 +45,29 @@ public class SubscriptionDao {
 		EntityManager entityManager = em.getEntityManagerFactory()
 				.createEntityManager();
 		try {
-			TypedQuery<Subscription> query = entityManager.createQuery(
-					"SELECT g FROM Subscription g WHERE g.id=\""
+			TypedQuery<Subscription> subscriptionQuery = entityManager
+					.createQuery("SELECT g FROM Subscription g WHERE g.id=\""
 							+ payload.getAccount().getAccountIdentifier()
 							+ "\"", Subscription.class);
 
-//			TypedQuery<Subscription> query = entityManager.createQuery(
-//					"SELECT g FROM Subscription g WHERE g.firstName=\""
-//							+ "DummyCreatorFirst"
-//							+ "\"", Subscription.class);
-			
-			Subscription result = query.getSingleResult();
+			// TypedQuery<Subscription> query = entityManager.createQuery(
+			// "SELECT g FROM Subscription g WHERE g.firstName=\""
+			// + "DummyCreatorFirst"
+			// + "\"", Subscription.class);
+
+			Subscription subscription = subscriptionQuery.getSingleResult();
 
 			entityManager.getTransaction().begin();
-			if (result.getUsers().size() > 0) {
-				for (User user : result.getUsers()) {
+			if (subscription.getUsers().size() > 0) {
+				for (User user : subscription.getUsers()) {
 					TypedQuery<User> userQuery = entityManager.createQuery(
 							"SELECT g FROM User g WHERE g.UserID=\""
 									+ user.getUserID() + "\"", User.class);
-					
+
 					entityManager.remove(userQuery.getSingleResult());
 				}
-			} 
-			entityManager.remove(result);	
+			}
+			entityManager.remove(subscription);
 			entityManager.getTransaction().commit();
 
 		} catch (Exception e) {
@@ -98,14 +98,14 @@ public class SubscriptionDao {
 		log.debug("updateAccount method");
 
 		try {
-			TypedQuery<Subscription> query = entityManager.createQuery(
-					"SELECT g FROM Subscription g WHERE g.id=\""
+			TypedQuery<Subscription> subscriptionQuery = entityManager
+					.createQuery("SELECT g FROM Subscription g WHERE g.id=\""
 							+ payload.getAccount().getAccountIdentifier()
 							+ "\"", Subscription.class);
 
-			Subscription result = query.getSingleResult();
+			Subscription subscription = subscriptionQuery.getSingleResult();
 			entityManager.getTransaction().begin();
-			result.setEditionCode(payload.getOrder().getEditionCode());
+			subscription.setEditionCode(payload.getOrder().getEditionCode());
 			entityManager.getTransaction().commit();
 
 		} catch (Exception e) {
@@ -123,18 +123,25 @@ public class SubscriptionDao {
 		log.debug("assignUser method");
 
 		try {
-			TypedQuery<Subscription> query = entityManager.createQuery(
-					"SELECT g FROM Subscription g WHERE g.id=\""
+			TypedQuery<Subscription> subscriptionQuery = entityManager
+					.createQuery("SELECT g FROM Subscription g WHERE g.id=\""
 							+ payload.getAccount().getAccountIdentifier()
 							+ "\"", Subscription.class);
 
-			Subscription result = query.getSingleResult();
+			Subscription subscription = subscriptionQuery.getSingleResult();
 
 			log.debug("Transaction beginning");
 
-			if (result.getUsers().size() < result.getMaxUsers()) {
-				log.debug("CURRENT SIZE: " + result.getUsers().size());
-				log.debug("MAX CAPACITY: " + result.getMaxUsers());
+			if (subscription.getUsers().size() < subscription.getMaxUsers()) {
+
+				for (User user : subscription.getUsers()) {
+					if (user.getEmail().equals(payload.getUser().getEmail())) {
+						throw new IllegalArgumentException(
+								"User with email already exists");
+					}
+				}
+				log.debug("CURRENT SIZE: " + subscription.getUsers().size());
+				log.debug("MAX CAPACITY: " + subscription.getMaxUsers());
 				entityManager.getTransaction().begin();
 				User user = new User();
 				user.setFirstName(payload.getUser().getFirstName());
@@ -142,7 +149,7 @@ public class SubscriptionDao {
 				user.setOpenId(payload.getUser().getOpenId());
 				user.setUserID(UUID.randomUUID().toString());
 				user.setEmail(payload.getUser().getEmail());
-				user.setSubscription(result);
+				user.setSubscription(subscription);
 				entityManager.persist(user);
 				entityManager.getTransaction().commit();
 			} else {
@@ -154,6 +161,52 @@ public class SubscriptionDao {
 			log.error("Error occurred during query");
 			throw new IllegalArgumentException("Subscription not found");
 		}
+	}
+
+	@Transactional
+	public void unassignUser(Payload payload) throws IllegalArgumentException,
+			IllegalStateException {
+		EntityManager entityManager = em.getEntityManagerFactory()
+				.createEntityManager();
+		log.debug("unassignUser method");
+
+		try {
+			TypedQuery<Subscription> subscriptionQuery = entityManager
+					.createQuery("SELECT g FROM Subscription g WHERE g.id=\""
+							+ payload.getAccount().getAccountIdentifier()
+							+ "\"", Subscription.class);
+
+			Subscription subscription = subscriptionQuery.getSingleResult();
+			User eraseUser = null;
+			if (subscription.getUsers().size() > 0) {
+				for (User user : subscription.getUsers()) {
+					if (user.getEmail().equals(payload.getUser().getEmail())) {
+						eraseUser = user;
+						break;
+					}
+				}
+				if (eraseUser != null) {
+					TypedQuery<User> userQuery = entityManager.createQuery(
+							"SELECT g FROM User g WHERE g.UserID=\""
+									+ eraseUser.getUserID() + "\"", User.class);
+					entityManager.getTransaction().begin();
+					entityManager.remove(userQuery.getSingleResult());
+					entityManager.getTransaction().commit();
+				} else {
+					throw new IllegalStateException(
+							"No users match given criteria");
+				}
+
+			} else {
+				throw new IllegalStateException(
+						"Subscription has no users to unassign");
+			}
+
+		} catch (Exception e) {
+			log.error("Error occurred during query");
+			throw new IllegalArgumentException("Subscription not found");
+		}
+
 	}
 
 }

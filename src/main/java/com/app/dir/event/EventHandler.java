@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -22,12 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
-import com.app.dir.event.processors.CancelSubscriptionEventProcessor;
-import com.app.dir.event.processors.ChangeSubscriptionEventProcessor;
 import com.app.dir.event.processors.EventProcessor;
-import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
-import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
-import com.app.dir.event.processors.UserAssignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 public class EventHandler {
