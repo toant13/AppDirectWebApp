@@ -49,6 +49,7 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token) throws ParseException {
 
 		log.debug("Create Subscription Endpoint");
+		log.debug("TOKEN PASSED IS: " + token);
 
 		Event event;
 		try {
@@ -78,7 +79,7 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token) {
 
 		log.debug("Change Subscription Endpoint");
-
+		log.debug("TOKEN PASSED IS: " + token);
 
 		Event event;
 		try {
@@ -104,7 +105,7 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token) {
 
 		log.debug("Cancel Subscription Endpoint");
-
+		log.debug("TOKEN PASSED IS: " + token);
 
 		Event event;
 		try {
@@ -156,7 +157,7 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token) {
 
 		log.debug("Assign User to subscription");
-
+		log.debug("TOKEN PASSED IS: " + token);
 
 		Event event;
 		try {
