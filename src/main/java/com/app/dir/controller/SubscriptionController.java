@@ -56,12 +56,13 @@ public class SubscriptionController {
 		log.debug("TOKEN PASSED IS: " + token);
 		log.debug("HEADER!!!: " + test);
 
-		OAuthConsumer consumer = new DefaultOAuthConsumer(
-				"appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
-		consumer.setSigningStrategy(new QueryStringSigningStrategy());
-		String signedUrl = consumer.sign(token);
-
-		log.debug("SIGNATURE!!!: " + signedUrl);
+		
+		OAuthConsumer consumer = new DefaultOAuthConsumer("appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
+		consumer.setSigningStrategy( new QueryStringSigningStrategy());
+		String url = token;
+		String signedUrl = consumer.sign(url);
+		
+		log.debug("NOOOSIGNATURE!!!: " + signedUrl);
 
 		Event event;
 		try {
