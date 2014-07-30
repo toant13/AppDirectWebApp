@@ -22,14 +22,14 @@ public class UserUnassignmentEventProcessor implements EventProcessor {
 		log.debug("invoking processEvent method in " + this.getClass().getName());
 		
 		try {
-			accountDao.assignUser(event.getPayload());
+			accountDao.unassignUser(event.getPayload());
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Successfully Assigned: "
 					+ event.getPayload().getUser().getFirstName() + " " + event.getPayload().getUser().getLastName());
 		} catch (IllegalArgumentException e) {
 			eventResult.setSuccess(false);
 			eventResult.setErrorCode("ACCOUNT_NOT_FOUND");
-			eventResult.setMessage("Failed to assign user because: " + e.getMessage());
+			eventResult.setMessage("Failed to unassign user because: " + e.getMessage());
 		} catch (IllegalStateException e1) {
 			eventResult.setSuccess(false);
 			eventResult.setErrorCode("INVALID_RESPONSE");
