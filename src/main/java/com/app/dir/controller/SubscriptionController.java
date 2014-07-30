@@ -59,10 +59,12 @@ public class SubscriptionController {
 		
 		OAuthConsumer consumer = new DefaultOAuthConsumer("appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
 		consumer.setSigningStrategy( new QueryStringSigningStrategy());
-		String url = token;
+		String url = "http://sleepy-mountain-3452.herokuapp.com/create?url=" + token;
+		log.debug("THATURLNBBBBB: " + url);
+
 		String signedUrl = consumer.sign(url);
 		
-		log.debug("NOOOSIGNATURE!!!: " + signedUrl);
+		log.debug("NewewSIGNATURE!!!: " + signedUrl);
 
 		Event event;
 		try {
