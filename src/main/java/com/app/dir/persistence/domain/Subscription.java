@@ -20,7 +20,9 @@ public class Subscription {
 
 	@Column(name = "LAST_NAME")
 	private String lastName;
-
+	
+	@Column(name = "EMAIL")
+	private String email;
 
 	@Column(name = "EDITION_CODE")
 	private String editionCode;
@@ -54,7 +56,6 @@ public class Subscription {
 	public void setMaxUsers(int maxUsers) {
 		this.maxUsers = maxUsers;
 	}
-
 
 	public Date getCreationDate() {
 		return creationDate;
@@ -112,6 +113,13 @@ public class Subscription {
 		this.companyUUID = companyUUID;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 	@Override
 	public String toString() {

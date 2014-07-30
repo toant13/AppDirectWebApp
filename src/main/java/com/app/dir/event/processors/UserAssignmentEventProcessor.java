@@ -22,7 +22,7 @@ public class UserAssignmentEventProcessor implements EventProcessor {
 		log.debug("invoking processEvent method");
 		
 		try {
-			accountDao.assignUser(event.getPayload());
+			accountDao.assignUser(event);
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Successfully Assigned: "
 					+ event.getPayload().getUser().getFirstName() + " " + event.getPayload().getUser().getLastName());

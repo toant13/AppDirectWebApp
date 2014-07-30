@@ -37,6 +37,7 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 		subscription.setEditionCode(event.getPayload().getOrder().getEditionCode());
 		subscription.setFirstName(event.getCreator().getFirstName());
 		subscription.setLastName(event.getCreator().getLastName());
+		subscription.setEmail(event.getCreator().getEmail());
 		
 		List<Item> itemList = event.getPayload().getOrder().getItems();
 		if(itemList != null){

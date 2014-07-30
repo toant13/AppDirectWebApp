@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.app.dir.domain.Event;
 import com.app.dir.domain.Payload;
 import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.User;
@@ -116,7 +117,7 @@ public class SubscriptionDao {
 	}
 
 	@Transactional
-	public void assignUser(Payload payload) throws IllegalArgumentException,
+	public void assignUser(Event event) throws IllegalArgumentException,
 			IllegalStateException {
 		EntityManager entityManager = em.getEntityManagerFactory()
 				.createEntityManager();
@@ -125,37 +126,44 @@ public class SubscriptionDao {
 		try {
 			TypedQuery<Subscription> subscriptionQuery = entityManager
 					.createQuery("SELECT g FROM Subscription g WHERE g.id=\""
-							+ payload.getAccount().getAccountIdentifier()
-							+ "\"", Subscription.class);
+							+ event.getPayload().getAccount()
+									.getAccountIdentifier() + "\"",
+							Subscription.class);
 
 			Subscription subscription = subscriptionQuery.getSingleResult();
 
-			log.debug("Transaction beginning");
+			if (subscription.getEmail().equals(event.getCreator().getEmail())) {
 
-			if (subscription.getUsers().size() < subscription.getMaxUsers()) {
+				if (subscription.getUsers().size() < subscription.getMaxUsers()) {
 
-				for (User user : subscription.getUsers()) {
-					if (user.getEmail().equals(payload.getUser().getEmail())) {
-						throw new IllegalArgumentException(
-								"User with email already exists");
+					for (User user : subscription.getUsers()) {
+						if (user.getEmail().equals(
+								event.getPayload().getUser().getEmail())) {
+							throw new IllegalArgumentException(
+									"User with email already exists");
+						}
 					}
+					log.debug("CURRENT SIZE: " + subscription.getUsers().size());
+					log.debug("MAX CAPACITY: " + subscription.getMaxUsers());
+					entityManager.getTransaction().begin();
+					User user = new User();
+					user.setFirstName(event.getPayload().getUser()
+							.getFirstName());
+					user.setLastName(event.getPayload().getUser().getLastName());
+					user.setOpenId(event.getPayload().getUser().getOpenId());
+					user.setUserID(UUID.randomUUID().toString());
+					user.setEmail(event.getPayload().getUser().getEmail());
+					user.setSubscription(subscription);
+					entityManager.persist(user);
+					entityManager.getTransaction().commit();
+				} else {
+					log.error("Number of users for this subscription have already reach full capacity");
+					throw new IllegalStateException(
+							"Number of users for this subscription have already reach full capacity");
 				}
-				log.debug("CURRENT SIZE: " + subscription.getUsers().size());
-				log.debug("MAX CAPACITY: " + subscription.getMaxUsers());
-				entityManager.getTransaction().begin();
-				User user = new User();
-				user.setFirstName(payload.getUser().getFirstName());
-				user.setLastName(payload.getUser().getLastName());
-				user.setOpenId(payload.getUser().getOpenId());
-				user.setUserID(UUID.randomUUID().toString());
-				user.setEmail(payload.getUser().getEmail());
-				user.setSubscription(subscription);
-				entityManager.persist(user);
-				entityManager.getTransaction().commit();
 			} else {
-				log.error("Number of users for this subscription have already reach full capacity");
-				throw new IllegalStateException(
-						"Number of users for this subscription have already reach full capacity");
+				throw new IllegalArgumentException(
+						"Do not have authorization to assign user");
 			}
 		} catch (Exception e) {
 			log.error("Error occurred during query");
