@@ -3,6 +3,7 @@ package com.app.dir.persistence.domain.dao;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -18,8 +19,8 @@ import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.User;
 
 /**
- * @author toantran
- *	Data Access Object that handles persist mechanism to database
+ * @author toantran Data Access Object that handles persist mechanism to
+ *         database
  */
 @Component
 public class SubscriptionDao {
@@ -31,29 +32,39 @@ public class SubscriptionDao {
 
 	/**
 	 * Creates subscription in data base
-	 * @param account Account to create
-	 * @param user User to assign 
+	 * 
+	 * @param account
+	 *            Account to create
+	 * @param user
+	 *            User to assign
 	 */
 	@Transactional
-	public void createSubscription(Subscription account, User user) {
+	public void createSubscription(Subscription account, User user) throws EntityExistsException{
 		log.debug("Contains account: " + em.contains(account));
 
 		// Add subscription
 		if (!em.contains(account)) {
 			em.persist(account);
-
+			// Add user
+			if (!em.contains(user)) {
+				em.persist(user);
+			} else {
+				throw new EntityExistsException("User entity already exists");
+			}
+		} else {
+			throw new EntityExistsException(
+					"Subscription entity already exists");
 		}
 
-		// Add user
-		if (!em.contains(user)) {
-			em.persist(user);
-		}
 	}
 
 	/**
 	 * Removes subscription from database
-	 * @param payload Payload with information necessary to remove subscription
-	 * @throws IllegalArgumentException Thrown when entry cannot be found in database
+	 * 
+	 * @param payload
+	 *            Payload with information necessary to remove subscription
+	 * @throws IllegalArgumentException
+	 *             Thrown when entry cannot be found in database
 	 */
 	public void removeSubscription(Payload payload)
 			throws IllegalArgumentException {
@@ -94,6 +105,7 @@ public class SubscriptionDao {
 
 	/**
 	 * Returns a list of all the subscriptions in the database
+	 * 
 	 * @return List of subscriptions
 	 */
 	public List<Subscription> getAllAccounts() {
@@ -105,6 +117,7 @@ public class SubscriptionDao {
 
 	/**
 	 * Returns list of all users assigned in the app
+	 * 
 	 * @return List of users
 	 */
 	public List<User> getAllUsers() {
@@ -115,8 +128,11 @@ public class SubscriptionDao {
 
 	/**
 	 * Updates the edition code of the subscription
-	 * @param payload Payload with information necessary for edition code update
-	 * @throws IllegalArgumentException Thrown when entry cannot be found in database
+	 * 
+	 * @param payload
+	 *            Payload with information necessary for edition code update
+	 * @throws IllegalArgumentException
+	 *             Thrown when entry cannot be found in database
 	 */
 	@Transactional
 	public void changeEditionCode(Payload payload)
@@ -145,9 +161,14 @@ public class SubscriptionDao {
 
 	/**
 	 * Assigns user to subscription
-	 * @param event Object with necessary information to assign user
-	 * @throws IllegalArgumentException Subscription cannot be found
-	 * @throws IllegalStateException Thrown when no more users can be added because the max capacity has been reached
+	 * 
+	 * @param event
+	 *            Object with necessary information to assign user
+	 * @throws IllegalArgumentException
+	 *             Subscription cannot be found
+	 * @throws IllegalStateException
+	 *             Thrown when no more users can be added because the max
+	 *             capacity has been reached
 	 */
 	@Transactional
 	public void assignUser(Event event) throws IllegalArgumentException,
@@ -205,9 +226,12 @@ public class SubscriptionDao {
 	}
 
 	/**
-	 * @param payload Payload object with necessary information to unassign user
-	 * @throws IllegalArgumentException Subscription cannot be found
-	 * @throws IllegalStateException User cannot be found or There are no users to remove
+	 * @param payload
+	 *            Payload object with necessary information to unassign user
+	 * @throws IllegalArgumentException
+	 *             Subscription cannot be found
+	 * @throws IllegalStateException
+	 *             User cannot be found or There are no users to remove
 	 */
 	@Transactional
 	public void unassignUser(Payload payload) throws IllegalArgumentException,

@@ -24,10 +24,7 @@ public class ChangeSubscriptionEventProcessor implements EventProcessor {
 	 */
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
-		// store new app buyer information somewhere
-
-		EventResult eventResult = new EventResult();
-		
+		EventResult eventResult = new EventResult();	
 		
 		try{
 			accountDao.changeEditionCode(event.getPayload());

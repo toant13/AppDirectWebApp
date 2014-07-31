@@ -24,6 +24,8 @@ import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 import com.app.dir.event.processors.UserAssignmentEventProcessor;
 import com.app.dir.event.processors.UserUnassignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
+import com.app.dir.service.oauth.HmacSha1OAuthService;
+import com.app.dir.service.oauth.OAuthService;
 
 /**
  * @author toantran
@@ -59,10 +61,11 @@ public class SubscriptionController {
 		EventHandler eventHandler;
 		try {
 			eventHandler = new EventHandler();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			EventProcessor eventProcessor = new OrderSubscriptionEventProcessor();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"SUBSCRIPTION_ORDER");
+					"SUBSCRIPTION_ORDER", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -96,10 +99,11 @@ public class SubscriptionController {
 		EventHandler eventHandler;
 		try {
 			eventHandler = new EventHandler();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			EventProcessor eventProcessor = new ChangeSubscriptionEventProcessor();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"SUBSCRIPTION_CHANGE");
+					"SUBSCRIPTION_CHANGE", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -133,10 +137,11 @@ public class SubscriptionController {
 		EventHandler eventHandler;
 		try {
 			eventHandler = new EventHandler();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			EventProcessor eventProcessor = new CancelSubscriptionEventProcessor();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"SUBSCRIPTION_CANCEL");
+					"SUBSCRIPTION_CANCEL", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -170,9 +175,10 @@ public class SubscriptionController {
 		try {
 			eventHandler = new EventHandler();
 			EventProcessor eventProcessor = new StatusSubscriptionEventProcessor();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"SUBSCRIPTION_NOTICE");
+					"SUBSCRIPTION_NOTICE", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -205,10 +211,11 @@ public class SubscriptionController {
 		EventHandler eventHandler;
 		try {
 			eventHandler = new EventHandler();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			EventProcessor eventProcessor = new UserAssignmentEventProcessor();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"USER_ASSIGNMENT");
+					"USER_ASSIGNMENT", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -241,10 +248,11 @@ public class SubscriptionController {
 		EventHandler eventHandler;
 		try {
 			eventHandler = new EventHandler();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			EventProcessor eventProcessor = new UserUnassignmentEventProcessor();
 			return eventHandler.processEvent(eventProcessor,
 					authorizationHeader, token, subscriptionDAO,
-					"USER_UNASSIGNMENT");
+					"USER_UNASSIGNMENT", oAuthService);
 		} catch (IOException e) {
 			log.error("Error loading properties file", e);
 			EventResult eventResult = new EventResult();
@@ -258,7 +266,9 @@ public class SubscriptionController {
 
 	/**
 	 * Returns a list of all the users currently active
-	 * @param model Model Map that contains list of all accouns
+	 * 
+	 * @param model
+	 *            Model Map that contains list of all accouns
 	 * @return
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -270,7 +280,9 @@ public class SubscriptionController {
 
 	/**
 	 * Returns a list of all the subscriptions currently active
-	 * @param model Model Map that contains list of all accouns
+	 * 
+	 * @param model
+	 *            Model Map that contains list of all accouns
 	 * @return
 	 */
 	@RequestMapping(value = "/users", method = RequestMethod.GET)

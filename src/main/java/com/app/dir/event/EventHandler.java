@@ -24,7 +24,6 @@ import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.processors.EventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
-import com.app.dir.service.oauth.HmacSha1OAuthService;
 import com.app.dir.service.oauth.OAuthService;
 
 /**
@@ -47,11 +46,21 @@ public class EventHandler {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 	}
 
+	/**
+	 * Makes necessary calls to classes to handle Event
+	 * @param eventProcessor EventProcessor used to process event
+	 * @param authorizationHeader Header containing OAuth parameters
+	 * @param token used to get xml
+	 * @param subscriptionDAO Data Access object used to persist subscriptions and users
+	 * @param eventType Type of event to execute
+	 * @param oAuthService OAuth service used to verify signature
+	 * @return Result of even process
+	 */
 	public EventResult processEvent(EventProcessor eventProcessor,
 			String authorizationHeader, String token,
-			SubscriptionDao subscriptionDAO, String eventType) {
+			SubscriptionDao subscriptionDAO, String eventType,
+			OAuthService oAuthService) {
 		try {
-			OAuthService oAuthService = new HmacSha1OAuthService();
 			String urlString = prop.getProperty("ROOT_URL")
 					+ prop.getProperty(eventType);
 
@@ -107,7 +116,17 @@ public class EventHandler {
 	}
 
 
-	public Event getEvent(String urlString) throws IOException,
+	/**
+	 * Signs token with HMA-SHA1 to enable authorization to access Event xml from the token url
+	 * @param urlString Url to fetch xml
+	 * @return Event object from xml fetched
+	 * @throws IOException Error occurred from retrieved stream
+	 * @throws OAuthMessageSignerException Failed to sign url
+	 * @throws OAuthExpectationFailedException OAuth Expection failed
+	 * @throws OAuthCommunicationException Connection error
+	 * @throws JAXBException Xml unmarshalling error
+	 */
+	private Event getEvent(String urlString) throws IOException,
 			OAuthMessageSignerException, OAuthExpectationFailedException,
 			OAuthCommunicationException, JAXBException {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
