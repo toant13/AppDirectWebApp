@@ -1,14 +1,10 @@
 package com.app.dir.event.processors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.persistence.EntityExistsException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,26 +22,45 @@ import com.app.dir.domain.Item;
 import com.app.dir.domain.Marketplace;
 import com.app.dir.domain.Order;
 import com.app.dir.domain.Payload;
-import com.app.dir.persistence.domain.Subscription;
-import com.app.dir.persistence.domain.User;
+import com.app.dir.domain.User;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
 /**
  * @author toantran
  * 
- *         Unit test OrderSubscriptionEventProcessor class
+ *         Unit test UserUnassignmentEventProcessor
+ *
  */
-public class OrderSubscriptionEventProcessorTest {
+public class UserUnassignmentEventProcessorTest {
 
 	@InjectMocks
 	private SubscriptionDao subscriptionDAO;
 
-	private Event event;
-
 	@Before
 	public void setup() {
 		this.subscriptionDAO = Mockito.mock(SubscriptionDao.class);
-		event = new Event();
+	}
+
+	/**
+	 * Test getEventType method
+	 */
+	@Test
+	public void getEventType_Void_SubscriptionCancelString() {
+		UserUnassignmentEventProcessor processor = new UserUnassignmentEventProcessor();
+		assertEquals("Processor has incorrect event type matched",
+				"USER_UNASSIGNMENT", processor.getEventType());
+	}
+
+	/**
+	 * Test processEvent method with successful Dao call
+	 */
+	@Test
+	public void processEvent_SuccessfulDaoCall_SucessfulEventResult() {
+		UserUnassignmentEventProcessor processor = new UserUnassignmentEventProcessor();
+		Mockito.doNothing().when(subscriptionDAO)
+				.unassignUser(Matchers.any(Payload.class));
+
+		Event event = new Event();
 
 		Order order = new Order();
 		order.setEditionCode("BASIC");
@@ -77,10 +92,15 @@ public class OrderSubscriptionEventProcessorTest {
 		company.setUuid(UUID.fromString("d15bb36e-5fb5-11e0-8c3c-00262d2cda03"));
 		company.setWebsite("http://www.example.com");
 
+		User user = new User();
+		user.setFirstName("firstName");
+		user.setLastName("lastName");
+
 		Payload payload = new Payload();
 		payload.setCompany(company);
 		payload.setConfiguration(configuration);
 		payload.setOrder(order);
+		payload.setUser(user);
 
 		Creator creator = new Creator();
 		creator.setEmail("test-email+creator@appdirect.com");
@@ -100,28 +120,6 @@ public class OrderSubscriptionEventProcessorTest {
 		event.setPayload(payload);
 		event.setReturnUrl("https://www.appdirect.com/finishprocure?token=dummyOrder");
 		event.setType("SUBSCRIPTION_ORDER");
-	}
-
-	/**
-	 * Test getEventType method
-	 */
-	@Test
-	public void getEventType_Void_SubscriptionCancelString() {
-		OrderSubscriptionEventProcessor processor = new OrderSubscriptionEventProcessor();
-		assertEquals("Processor has incorrect event type matched",
-				"SUBSCRIPTION_ORDER", processor.getEventType());
-	}
-
-	/**
-	 * Test processEvent method with successful Dao call
-	 */
-	@Test
-	public void processEvent_SuccessfulDaoCall_SucessfulEventResult() {
-		OrderSubscriptionEventProcessor processor = new OrderSubscriptionEventProcessor();
-		Mockito.doNothing()
-				.when(subscriptionDAO)
-				.createSubscription(Matchers.any(Subscription.class),
-						Matchers.any(User.class));
 
 		EventResult actual = processor.processEvent(event, subscriptionDAO);
 
@@ -129,18 +127,33 @@ public class OrderSubscriptionEventProcessorTest {
 	}
 
 	/**
-	 * Test processEvent method with unsuccessful DAO call
+	 * Test processEvent method with unsuccessful Dao call
 	 */
 	@Test
-	public void processEvent_DaoException_UnsucessfulEventResult() {
-		OrderSubscriptionEventProcessor processor = new OrderSubscriptionEventProcessor();
+	public void processEvent_NoSubscriptinFoundInput_UnsuccessfulEventResult() {
+		UserUnassignmentEventProcessor processor = new UserUnassignmentEventProcessor();
 
-		Mockito.doThrow(new EntityExistsException())
-				.when(subscriptionDAO)
-				.createSubscription(Matchers.any(Subscription.class),
-						Matchers.any(User.class));
+		Mockito.doThrow(new IllegalArgumentException()).when(subscriptionDAO)
+				.unassignUser(Matchers.any(Payload.class));
+		Event event = new Event();
 		EventResult actual = processor.processEvent(event, subscriptionDAO);
-		assertFalse("Result should be False", actual.isSuccess());
+		assertEquals("Result message is incorrect", "ACCOUNT_NOT_FOUND",
+				actual.getErrorCode());
+	}
+
+	/**
+	 * Test processEvent method with unsuccessful Dao call
+	 */
+	@Test
+	public void processEvent_TooManyUsers_UnsuccessfulEventResult() {
+		UserUnassignmentEventProcessor processor = new UserUnassignmentEventProcessor();
+
+		Mockito.doThrow(new IllegalStateException()).when(subscriptionDAO)
+				.unassignUser(Matchers.any(Payload.class));
+		Event event = new Event();
+		EventResult actual = processor.processEvent(event, subscriptionDAO);
+		assertEquals("Result message is incorrect", "INVALID_RESPONSE",
+				actual.getErrorCode());
 	}
 
 }

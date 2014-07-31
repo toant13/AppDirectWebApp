@@ -25,6 +25,11 @@ import com.app.dir.domain.Payload;
 import com.app.dir.domain.User;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
+/**
+ * @author toantran
+ * 
+ *         Unit test UserAssignmentEventProcessor class
+ */
 public class UserAssignmentEventProcessorTest {
 
 	@InjectMocks
@@ -46,7 +51,7 @@ public class UserAssignmentEventProcessorTest {
 	}
 
 	/**
-	 * Test processEvent method with successfaul Dao call
+	 * Test processEvent method with successful Dao call
 	 */
 	@Test
 	public void processEvent_SuccessfulDaoCall_SucessfulEventResult() {

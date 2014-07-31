@@ -42,7 +42,7 @@ public class CancelSubscriptionEventProcessorTest {
 	}
 
 	/**
-	 * Test processEvent method with successfaul Dao call
+	 * Test processEvent method with successful Dao call
 	 */
 	@Test
 	public void processEvent_SuccessfulDaoCall_SucessfulEventResult() {
