@@ -133,6 +133,8 @@ public class OAuthService {
 //			generateSignature(oAuthMap, baseUrlString, tokenUrlString).equals(
 //					oAuthMap.get("oauth_signature"));
 			
+			log.debug("SIZEOFMAP: " + oAuthMap.size());
+			
 			String generated = generateSignature(oAuthMap, baseUrlString, tokenUrlString);
 			String given = oAuthMap.get("oauth_signature");
 			log.debug("GENERATED!!!!:" + generated);
