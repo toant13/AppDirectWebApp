@@ -5,7 +5,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -53,51 +52,53 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token,
 			@RequestHeader(value = "Authorization") String authorizationHeader) {
 		log.debug("Order Subscription Endpoint");
-		Properties prop = new Properties();
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("sub_order_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new OrderSubscriptionEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
+//		Properties prop = new Properties();
+//		try {
+//			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+//			OAuthService oAuthService = new OAuthService();
+//			if (oAuthService.verifySignature(authorizationHeader,
+//					prop.getProperty("root_url") + prop.getProperty("sub_order_url"), token)) {
+//				Event event;
+//				try {
+//					log.debug("beginning to parse xml");
+//					event = eventHandler.getEvent(token);
+//					log.debug("beginning to process order");
+//					EventProcessor ev = new OrderSubscriptionEventProcessor();
+//					EventResult eventResult = eventHandler.processEvent(event,
+//							subscriptionDAO, ev);
+//
+//					return eventResult;
+//				} catch (OAuthMessageSignerException
+//						| OAuthExpectationFailedException
+//						| OAuthCommunicationException | IOException
+//						| JAXBException e) {
+//
+//					log.error("Error processing event", e);
+//					EventResult eventResult = new EventResult();
+//					eventResult.setSuccess(false);
+//					eventResult.setMessage("Error processing event");
+//					eventResult.setErrorCode("CONFIGURATION_ERROR");
+//					return eventResult;
+//				}
+//			} else {
+//				EventResult eventResult = new EventResult();
+//				eventResult.setSuccess(false);
+//				eventResult.setMessage("Caller not authorized to use service");
+//				eventResult.setErrorCode("CONFIGURATION_ERROR");
+//				return eventResult;
+//			}
+//
+//		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+//			log.error("Error processing event", e1);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error loading keys");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
 
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
-
+		EventProcessor eventProcessor = new OrderSubscriptionEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_ORDER");
 	}
 
 	@RequestMapping(value = "/change", method = RequestMethod.GET)
@@ -113,7 +114,7 @@ public class SubscriptionController {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("sub_change_url"), token)) {
+					prop.getProperty("ROOT_URL") + prop.getProperty("sub_change_url"), token)) {
 				Event event;
 				try {
 					log.debug("beginning to parse xml");
@@ -167,7 +168,7 @@ public class SubscriptionController {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("sub_cancel_url"), token)) {
+					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
 				Event event;
 				try {
 					log.debug("beginning to parse xml");
@@ -221,7 +222,7 @@ public class SubscriptionController {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("sub_cancel_url"), token)) {
+					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
 				Event event;
 				try {
 					log.debug("beginning to parse xml");
@@ -275,7 +276,7 @@ public class SubscriptionController {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("user_assign_url"), token)) {
+					prop.getProperty("ROOT_URL") + prop.getProperty("user_assign_url"), token)) {
 				Event event;
 				try {
 					log.debug("beginning to parse xml");
@@ -329,7 +330,7 @@ public class SubscriptionController {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("user_unassign_url"), token)) {
+					prop.getProperty("ROOT_URL") + prop.getProperty("user_unassign_url"), token)) {
 				Event event;
 				try {
 					log.debug("beginning to parse xml");

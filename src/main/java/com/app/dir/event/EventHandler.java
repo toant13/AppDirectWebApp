@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -21,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.processors.EventProcessor;
+import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
+import com.app.dir.service.oauth.OAuthService;
 
 public class EventHandler {
 	private Properties prop = new Properties();
@@ -37,6 +41,60 @@ public class EventHandler {
 		}
 	}
 
+	public EventResult processEvent(EventProcessor eventProcessor, String authorizationHeader, String token, SubscriptionDao subscriptionDAO, String eventType){
+		Properties prop = new Properties();
+		try {
+			OAuthService oAuthService = new OAuthService();
+			if (oAuthService.verifySignature(authorizationHeader,
+					prop.getProperty("ROOT_URL") + prop.getProperty(eventType), token)) {
+				Event event;
+				try {
+					log.debug("beginning to unmarshall xml");
+					event = getEvent(token);
+					
+					if(event.getType().equals(eventType)){
+						log.debug("beginning to process order");
+						EventResult eventResult = eventProcessor.processEvent(event, subscriptionDAO);
+						return eventResult;
+					} else { //incorrect event type in xml for the endpoint used
+						EventResult eventResult = new EventResult();
+						eventResult.setSuccess(false);
+						eventResult.setMessage("Error processing event");
+						eventResult.setErrorCode("CONFIGURATION_ERROR");
+						return eventResult;
+					}
+				} catch (OAuthMessageSignerException
+						| OAuthExpectationFailedException
+						| OAuthCommunicationException | IOException
+						| JAXBException e) {
+
+					log.error("Error processing event", e);
+					EventResult eventResult = new EventResult();
+					eventResult.setSuccess(false);
+					eventResult.setMessage("Error processing event");
+					eventResult.setErrorCode("CONFIGURATION_ERROR");
+					return eventResult;
+				}
+			} else {
+				EventResult eventResult = new EventResult();
+				eventResult.setSuccess(false);
+				eventResult.setMessage("Caller not authorized to use service");
+				eventResult.setErrorCode("CONFIGURATION_ERROR");
+				return eventResult;
+			}
+
+		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+			log.error("Error processing event", e1);
+			EventResult eventResult = new EventResult();
+			eventResult.setSuccess(false);
+			eventResult.setMessage("Error loading keys");
+			eventResult.setErrorCode("CONFIGURATION_ERROR");
+			return eventResult;
+		}
+
+	}
+	
+	
 	// TODO: update this to make sure coming from correct endpoint
 	public EventResult processEvent(Event event, SubscriptionDao dao, EventProcessor eventProcessor) {
 		return eventProcessor.processEvent(event, dao);
