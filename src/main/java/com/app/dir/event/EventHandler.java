@@ -23,33 +23,37 @@ import org.slf4j.LoggerFactory;
 import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.event.processors.EventProcessor;
-import com.app.dir.event.processors.OrderSubscriptionEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
+import com.app.dir.service.oauth.HmacSha1OAuthService;
 import com.app.dir.service.oauth.OAuthService;
 
+/**
+ * @author toantran
+ * 
+ * Handles the Event xml given from the endpoint to produce given EventResult xml output
+ *
+ */
 public class EventHandler {
 	private Properties prop = new Properties();
 
 	private static final Logger log = LoggerFactory
 			.getLogger(EventHandler.class);
 
-	public EventHandler() {
-		try {
+	/**
+	 * Constructor that loads properties file
+	 * @throws IOException 
+	 */
+	public EventHandler() throws IOException {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-		} catch (IOException e) {
-			log.error("Errorloading consumer.properties", e);
-		}
 	}
 
 	public EventResult processEvent(EventProcessor eventProcessor,
 			String authorizationHeader, String token,
 			SubscriptionDao subscriptionDAO, String eventType) {
 		try {
-			OAuthService oAuthService = new OAuthService();
+			OAuthService oAuthService = new HmacSha1OAuthService();
 			String urlString = prop.getProperty("ROOT_URL")
 					+ prop.getProperty(eventType);
-
-			log.debug("URL STRING IS: " + urlString);
 
 			if (oAuthService.verifySignature(authorizationHeader, urlString,
 					token)) {
@@ -102,13 +106,7 @@ public class EventHandler {
 
 	}
 
-	// TODO: update this to make sure coming from correct endpoint
-	public EventResult processEvent(Event event, SubscriptionDao dao,
-			EventProcessor eventProcessor) {
-		return eventProcessor.processEvent(event, dao);
-	}
 
-	// TODO: clean up exceptions, add exceptions
 	public Event getEvent(String urlString) throws IOException,
 			OAuthMessageSignerException, OAuthExpectationFailedException,
 			OAuthCommunicationException, JAXBException {
