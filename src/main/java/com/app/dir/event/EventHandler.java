@@ -35,7 +35,6 @@ public class EventHandler {
 		} catch (IOException e) {
 			log.error("Errorloading consumer.properties", e);
 		}
-
 	}
 
 	// TODO: update this to make sure coming from correct endpoint

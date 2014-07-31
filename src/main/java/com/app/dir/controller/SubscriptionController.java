@@ -1,16 +1,16 @@
 package com.app.dir.controller;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.signature.QueryStringSigningStrategy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +35,13 @@ import com.app.dir.event.processors.StatusSubscriptionEventProcessor;
 import com.app.dir.event.processors.UserAssignmentEventProcessor;
 import com.app.dir.event.processors.UserUnassignmentEventProcessor;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
+import com.app.dir.service.oauth.OAuthService;
 
 @Controller
 @RequestMapping("/")
 public class SubscriptionController {
 	final private EventHandler eventHandler = new EventHandler();
+	
 	private static final Logger log = LoggerFactory
 			.getLogger(SubscriptionController.class);
 
@@ -49,40 +51,54 @@ public class SubscriptionController {
 	@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public @ResponseBody EventResult orderSubscription(
 			@RequestParam(value = "url", required = true) String token,
-			@RequestHeader(value = "Authorization") String test,
-			HttpServletRequest req) throws OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException {
+			@RequestHeader(value = "Authorization") String authorization,
+			HttpServletRequest req) {
 
 		log.debug("Create Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
-		log.debug("HEADER!!!: " + test);
+		log.debug("HEADER!!!: " + authorization);
+		Properties prop = new Properties();
 
-		
-		OAuthConsumer consumer = new DefaultOAuthConsumer("appdirectintegrationchallenge-11272", "WF0JZQZ1hJE8N7JN");
-		consumer.setSigningStrategy( new QueryStringSigningStrategy());
-		String url = "http://sleepy-mountain-3452.herokuapp.com/create?url=" + token;
-		log.debug("THATURLNBBBBB: " + url);
-
-		String signedUrl = consumer.sign(url);
-		
-		log.debug("NewewSIGNATURE!!!: " + signedUrl);
-
-		Event event;
 		try {
-			log.debug("beginning to parse xml");
-			event = eventHandler.getEvent(token);
-			log.debug("beginning to process order");
-			EventProcessor ev = new OrderSubscriptionEventProcessor();
-			EventResult eventResult = eventHandler.processEvent(event,
-					subscriptionDAO, ev);
+			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+			OAuthService oAuthService = new OAuthService();
+			if (oAuthService.verifySignature(authorization, prop.getProperty("consumer-key"),
+					token)) {
+				Event event;
+				try {
+					log.debug("beginning to parse xml");
+					event = eventHandler.getEvent(token);
+					log.debug("beginning to process order");
+					EventProcessor ev = new OrderSubscriptionEventProcessor();
+					EventResult eventResult = eventHandler.processEvent(event,
+							subscriptionDAO, ev);
 
-			return eventResult;
-		} catch (OAuthMessageSignerException | OAuthExpectationFailedException
-				| OAuthCommunicationException | IOException | JAXBException e) {
+					return eventResult;
+				} catch (OAuthMessageSignerException
+						| OAuthExpectationFailedException
+						| OAuthCommunicationException | IOException
+						| JAXBException e) {
 
-			log.error("Error processing event", e);
+					log.error("Error processing event", e);
+					EventResult eventResult = new EventResult();
+					eventResult.setSuccess(false);
+					eventResult.setMessage("Error processing event");
+					eventResult.setErrorCode("CONFIGURATION_ERROR");
+					return eventResult;
+				}
+			} else {
+				EventResult eventResult = new EventResult();
+				eventResult.setSuccess(false);
+				eventResult.setMessage("Caller not authorized to use service");
+				eventResult.setErrorCode("CONFIGURATION_ERROR");
+				return eventResult;
+			}
+
+		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+			log.error("Error processing event", e1);
 			EventResult eventResult = new EventResult();
 			eventResult.setSuccess(false);
-			eventResult.setMessage("Error processing event");
+			eventResult.setMessage("Error loading keys");
 			eventResult.setErrorCode("CONFIGURATION_ERROR");
 			return eventResult;
 		}
