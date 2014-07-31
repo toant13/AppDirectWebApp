@@ -45,8 +45,12 @@ public class EventHandler {
 		Properties prop = new Properties();
 		try {
 			OAuthService oAuthService = new OAuthService();
+			String urlString = prop.getProperty("ROOT_URL") + prop.getProperty(eventType);
+			
+			log.debug("URL STRING IS: " + urlString);
+			
 			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty(eventType), token)) {
+					urlString , token)) {
 				Event event;
 				try {
 					log.debug("beginning to unmarshall xml");
