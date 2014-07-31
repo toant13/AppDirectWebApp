@@ -62,7 +62,7 @@ public class SubscriptionController {
 		try {
 			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorization, prop.getProperty("consumer-key"),
+			if (oAuthService.verifySignature(authorization, prop.getProperty("sub_order_url"),
 					token)) {
 				Event event;
 				try {
