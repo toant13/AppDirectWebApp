@@ -8,6 +8,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of Company marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "country", "email", "name", "phoneNumber", "uuid",
 		"website" })
 @XmlAccessorType(XmlAccessType.FIELD)

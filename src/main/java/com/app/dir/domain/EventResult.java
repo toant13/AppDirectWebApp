@@ -6,6 +6,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of EventResult marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "success", "errorCode", "message", "accountIdentifier" })
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="result")

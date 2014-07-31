@@ -6,6 +6,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of Entry marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "key", "value" })
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -32,7 +39,7 @@ public class Entry {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Entry)) {
@@ -40,15 +47,15 @@ public class Entry {
 		} else if (obj == this) {
 			return true;
 		} else {
-			final Entry entry =  (Entry) obj;
-			if( !(this.key.equals(entry.key))){
+			final Entry entry = (Entry) obj;
+			if (!(this.key.equals(entry.key))) {
 				return false;
 			}
-			if( !(this.value.equals(entry.value))){
+			if (!(this.value.equals(entry.value))) {
 				return false;
 			}
-			return true;			
+			return true;
 		}
 	}
-	
+
 }

@@ -7,7 +7,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of Order marshalling and unmarshalling
+ *
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="order")
 public class Order {

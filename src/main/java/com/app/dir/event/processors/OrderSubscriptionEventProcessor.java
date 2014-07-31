@@ -16,33 +16,46 @@ import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.User;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
+/**
+ * @author toantran
+ * 
+ *         Handles events related to subscription ordering
+ *
+ */
 public class OrderSubscriptionEventProcessor implements EventProcessor {
 	private static final Logger log = LoggerFactory
 			.getLogger(OrderSubscriptionEventProcessor.class);
-	
+
+	/* (non-Javadoc)
+	 * @see com.app.dir.event.processors.EventProcessor#getEventType()
+	 */
 	@Override
 	public String getEventType() {
 		return "SUBSCRIPTION_ORDER";
 	}
 
+	/* (non-Javadoc)
+	 * @see com.app.dir.event.processors.EventProcessor#processEvent(com.app.dir.domain.Event, com.app.dir.persistence.domain.dao.SubscriptionDao)
+	 */
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
 		log.debug("processing order subscription");
-		
-		
+
 		Subscription subscription = new Subscription();
-		
-		subscription.setCompanyUUID(event.getPayload().getCompany().getUuid().toString());
+
+		subscription.setCompanyUUID(event.getPayload().getCompany().getUuid()
+				.toString());
 		subscription.setCreationDate(new Date());
-		subscription.setEditionCode(event.getPayload().getOrder().getEditionCode());
+		subscription.setEditionCode(event.getPayload().getOrder()
+				.getEditionCode());
 		subscription.setFirstName(event.getCreator().getFirstName());
 		subscription.setLastName(event.getCreator().getLastName());
 		subscription.setEmail(event.getCreator().getEmail());
-		
+
 		List<Item> itemList = event.getPayload().getOrder().getItems();
-		if(itemList != null){
-			for(Item item : itemList){
-				if(item.getUnit().equals("USER")){
+		if (itemList != null) {
+			for (Item item : itemList) {
+				if (item.getUnit().equals("USER")) {
 					subscription.setMaxUsers(item.getQuantity());
 					break;
 				}
@@ -50,14 +63,14 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 		} else {
 			subscription.setMaxUsers(Integer.MAX_VALUE);
 		}
-		
+
 		String accountID = UUID.randomUUID().toString();
 		subscription.setId(accountID);
-		
+
 		EventResult eventResult = new EventResult();
 		try {
-			
-			//Assign creator of subscription as a user
+
+			// Assign creator of subscription as a user
 			User user = new User();
 			user.setEmail(event.getCreator().getEmail());
 			user.setFirstName(event.getCreator().getFirstName());
@@ -65,18 +78,17 @@ public class OrderSubscriptionEventProcessor implements EventProcessor {
 			user.setOpenId(event.getCreator().getOpenId());
 			user.setUserID(UUID.randomUUID().toString());
 			user.setSubscription(subscription);
-			
+
 			accountDao.createSubscription(subscription, user);
 			eventResult.setSuccess(true);
 			eventResult.setMessage("Subscription creation successful");
 			eventResult.setAccountIdentifier(accountID);
-	
-			
-		} catch(EntityExistsException e){
+
+		} catch (EntityExistsException e) {
 			eventResult.setSuccess(false);
-			eventResult.setMessage("Subscription creation failed");		
+			eventResult.setMessage("Subscription creation failed");
 		}
-		
+
 		return eventResult;
 	}
 

@@ -17,6 +17,10 @@ import com.app.dir.domain.Payload;
 import com.app.dir.persistence.domain.Subscription;
 import com.app.dir.persistence.domain.User;
 
+/**
+ * @author toantran
+ *	Data Access Object that handles persist mechanism to database
+ */
 @Component
 public class SubscriptionDao {
 	private static final Logger log = LoggerFactory
@@ -25,6 +29,11 @@ public class SubscriptionDao {
 	@PersistenceContext
 	private EntityManager em;
 
+	/**
+	 * Creates subscription in data base
+	 * @param account Account to create
+	 * @param user User to assign 
+	 */
 	@Transactional
 	public void createSubscription(Subscription account, User user) {
 		log.debug("Contains account: " + em.contains(account));
@@ -41,6 +50,11 @@ public class SubscriptionDao {
 		}
 	}
 
+	/**
+	 * Removes subscription from database
+	 * @param payload Payload with information necessary to remove subscription
+	 * @throws IllegalArgumentException Thrown when entry cannot be found in database
+	 */
 	public void removeSubscription(Payload payload)
 			throws IllegalArgumentException {
 		EntityManager entityManager = em.getEntityManagerFactory()
@@ -78,6 +92,10 @@ public class SubscriptionDao {
 
 	}
 
+	/**
+	 * Returns a list of all the subscriptions in the database
+	 * @return List of subscriptions
+	 */
 	public List<Subscription> getAllAccounts() {
 		TypedQuery<Subscription> query = em.createQuery(
 				"SELECT g FROM Subscription g ORDER BY g.id",
@@ -85,12 +103,21 @@ public class SubscriptionDao {
 		return query.getResultList();
 	}
 
+	/**
+	 * Returns list of all users assigned in the app
+	 * @return List of users
+	 */
 	public List<User> getAllUsers() {
 		TypedQuery<User> query = em.createQuery(
 				"SELECT g FROM User g ORDER BY g.UserID", User.class);
 		return query.getResultList();
 	}
 
+	/**
+	 * Updates the edition code of the subscription
+	 * @param payload Payload with information necessary for edition code update
+	 * @throws IllegalArgumentException Thrown when entry cannot be found in database
+	 */
 	@Transactional
 	public void changeEditionCode(Payload payload)
 			throws IllegalArgumentException {
@@ -116,6 +143,12 @@ public class SubscriptionDao {
 
 	}
 
+	/**
+	 * Assigns user to subscription
+	 * @param event Object with necessary information to assign user
+	 * @throws IllegalArgumentException Subscription cannot be found
+	 * @throws IllegalStateException Thrown when no more users can be added because the max capacity has been reached
+	 */
 	@Transactional
 	public void assignUser(Event event) throws IllegalArgumentException,
 			IllegalStateException {
@@ -171,6 +204,11 @@ public class SubscriptionDao {
 		}
 	}
 
+	/**
+	 * @param payload Payload object with necessary information to unassign user
+	 * @throws IllegalArgumentException Subscription cannot be found
+	 * @throws IllegalStateException User cannot be found or There are no users to remove
+	 */
 	@Transactional
 	public void unassignUser(Payload payload) throws IllegalArgumentException,
 			IllegalStateException {

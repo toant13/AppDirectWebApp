@@ -7,15 +7,27 @@ import com.app.dir.domain.Event;
 import com.app.dir.domain.EventResult;
 import com.app.dir.persistence.domain.dao.SubscriptionDao;
 
+/**
+ * @author toantran
+ * 
+ * Handles events relating to user unassignment from a subscription
+ *
+ */
 public class UserUnassignmentEventProcessor implements EventProcessor {
 	private static final Logger log = LoggerFactory
 			.getLogger(UserUnassignmentEventProcessor.class);
 	
+	/* (non-Javadoc)
+	 * @see com.app.dir.event.processors.EventProcessor#getEventType()
+	 */
 	@Override
 	public String getEventType() {
 		return "USER_UNASSIGNMENT";
 	}
 
+	/* (non-Javadoc)
+	 * @see com.app.dir.event.processors.EventProcessor#processEvent(com.app.dir.domain.Event, com.app.dir.persistence.domain.dao.SubscriptionDao)
+	 */
 	@Override
 	public EventResult processEvent(Event event, SubscriptionDao accountDao) {
 		EventResult eventResult = new EventResult();

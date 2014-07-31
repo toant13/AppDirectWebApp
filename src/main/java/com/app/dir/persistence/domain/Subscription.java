@@ -8,6 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+/**
+ * @author toantran
+ *	Entity for Subscription related data
+ */
 @Entity
 public class Subscription {
 

@@ -6,6 +6,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of User marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "email", "firstName", "lastName", "openId"})
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="user")

@@ -5,6 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of Configuration marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "entry" })
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement

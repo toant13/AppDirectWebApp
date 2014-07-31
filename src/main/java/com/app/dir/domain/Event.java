@@ -6,6 +6,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
+
+/**
+ * @author toantran
+ * 
+ * 
+ *         Class in charge of Event marshalling and unmarshalling
+ *
+ */
 @XmlType(propOrder = { "creator", "flag", "marketplace", "payload",
 		"returnUrl", "type" })
 @XmlAccessorType(XmlAccessType.FIELD)
