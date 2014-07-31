@@ -82,6 +82,9 @@ public class OAuthService {
 						+ URLEncoder.encode(
 								URLEncoder.encode(tokenUrlString, ENC), ENC));
 
+		
+		log.debug("BASE STRING!!!: "+ baseString.toString());
+		
 		String keyString = URLEncoder.encode(
 				prop.getProperty("consumer-secret"), ENC) + '&';
 
