@@ -83,7 +83,7 @@ public class OAuthService {
 								URLEncoder.encode(tokenUrlString, ENC), ENC));
 
 		String keyString = URLEncoder.encode(
-				prop.getProperty("consumer-secret"), ENC) + '&';
+				prop.getProperty("CONSUMER_SECRET"), ENC) + '&';
 
 		byte[] keyBytes = keyString.getBytes(ENC);
 		Mac mac = Mac.getInstance(HMAC_SHA1);
@@ -115,7 +115,7 @@ public class OAuthService {
 			throws InvalidKeyException, UnsupportedEncodingException,
 			NoSuchAlgorithmException {
 		log.debug("verifySignature method");
-		String serverConsumerKey = prop.getProperty("consumer-key");
+		String serverConsumerKey = prop.getProperty("CONSUMER_KEY");
 
 		Map<String, String> oAuthMap = new HashMap<String, String>();
 		String[] authArray = authorizationHeader.split(",");

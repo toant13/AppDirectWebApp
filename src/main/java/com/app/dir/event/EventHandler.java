@@ -113,8 +113,8 @@ public class EventHandler {
 			OAuthMessageSignerException, OAuthExpectationFailedException,
 			OAuthCommunicationException, JAXBException {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
-				prop.getProperty("consumer-key"),
-				prop.getProperty("consumer-secret"));
+				prop.getProperty("CONSUMER_KEY"),
+				prop.getProperty("CONSUMER_SECRET"));
 
 		log.debug("GETTING XML FROM APP DIRECT");
 

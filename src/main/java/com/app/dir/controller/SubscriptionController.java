@@ -52,18 +52,32 @@ public class SubscriptionController {
 			@RequestParam(value = "url", required = true) String token,
 			@RequestHeader(value = "Authorization") String authorizationHeader) {
 		log.debug("Order Subscription Endpoint");
+
+
+		EventProcessor eventProcessor = new OrderSubscriptionEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_ORDER");
+	}
+
+	@RequestMapping(value = "/change", method = RequestMethod.GET)
+	public @ResponseBody EventResult changeSubscription(
+			@RequestParam(value = "url", required = true) String token,
+			@RequestHeader(value = "Authorization") String authorizationHeader) {
+
+		log.debug("Change Subscription Endpoint");
+		log.debug("TOKEN PASSED IS: " + token);
 //		Properties prop = new Properties();
+//
 //		try {
 //			prop.load(getClass().getResourceAsStream("/consumer.properties"));
 //			OAuthService oAuthService = new OAuthService();
 //			if (oAuthService.verifySignature(authorizationHeader,
-//					prop.getProperty("root_url") + prop.getProperty("sub_order_url"), token)) {
+//					prop.getProperty("ROOT_URL") + prop.getProperty("sub_change_url"), token)) {
 //				Event event;
 //				try {
 //					log.debug("beginning to parse xml");
 //					event = eventHandler.getEvent(token);
 //					log.debug("beginning to process order");
-//					EventProcessor ev = new OrderSubscriptionEventProcessor();
+//					EventProcessor ev = new ChangeSubscriptionEventProcessor();
 //					EventResult eventResult = eventHandler.processEvent(event,
 //							subscriptionDAO, ev);
 //
@@ -96,63 +110,9 @@ public class SubscriptionController {
 //			eventResult.setErrorCode("CONFIGURATION_ERROR");
 //			return eventResult;
 //		}
-
-		EventProcessor eventProcessor = new OrderSubscriptionEventProcessor();
-		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_ORDER");
-	}
-
-	@RequestMapping(value = "/change", method = RequestMethod.GET)
-	public @ResponseBody EventResult changeSubscription(
-			@RequestParam(value = "url", required = true) String token,
-			@RequestHeader(value = "Authorization") String authorizationHeader) {
-
-		log.debug("Change Subscription Endpoint");
-		log.debug("TOKEN PASSED IS: " + token);
-		Properties prop = new Properties();
-
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty("sub_change_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new ChangeSubscriptionEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
-
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
+		
+		EventProcessor eventProcessor = new ChangeSubscriptionEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_CHANGE");
 	}
 
 	@RequestMapping(value = "/cancel", method = RequestMethod.GET)
@@ -162,51 +122,54 @@ public class SubscriptionController {
 
 		log.debug("Cancel Subscription Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
-		Properties prop = new Properties();
-
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new CancelSubscriptionEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
-
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
+//		Properties prop = new Properties();
+//
+//		try {
+//			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+//			OAuthService oAuthService = new OAuthService();
+//			if (oAuthService.verifySignature(authorizationHeader,
+//					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
+//				Event event;
+//				try {
+//					log.debug("beginning to parse xml");
+//					event = eventHandler.getEvent(token);
+//					log.debug("beginning to process order");
+//					EventProcessor ev = new CancelSubscriptionEventProcessor();
+//					EventResult eventResult = eventHandler.processEvent(event,
+//							subscriptionDAO, ev);
+//
+//					return eventResult;
+//				} catch (OAuthMessageSignerException
+//						| OAuthExpectationFailedException
+//						| OAuthCommunicationException | IOException
+//						| JAXBException e) {
+//
+//					log.error("Error processing event", e);
+//					EventResult eventResult = new EventResult();
+//					eventResult.setSuccess(false);
+//					eventResult.setMessage("Error processing event");
+//					eventResult.setErrorCode("CONFIGURATION_ERROR");
+//					return eventResult;
+//				}
+//			} else {
+//				EventResult eventResult = new EventResult();
+//				eventResult.setSuccess(false);
+//				eventResult.setMessage("Caller not authorized to use service");
+//				eventResult.setErrorCode("CONFIGURATION_ERROR");
+//				return eventResult;
+//			}
+//
+//		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+//			log.error("Error processing event", e1);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error loading keys");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
+		
+		EventProcessor eventProcessor = new CancelSubscriptionEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_CANCEL");
 	}
 
 	@RequestMapping(value = "/status", method = RequestMethod.GET)
@@ -216,51 +179,54 @@ public class SubscriptionController {
 
 		log.debug("Status Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
-		Properties prop = new Properties();
-
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new StatusSubscriptionEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
-
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
+//		Properties prop = new Properties();
+//
+//		try {
+//			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+//			OAuthService oAuthService = new OAuthService();
+//			if (oAuthService.verifySignature(authorizationHeader,
+//					prop.getProperty("ROOT_URL") + prop.getProperty("sub_cancel_url"), token)) {
+//				Event event;
+//				try {
+//					log.debug("beginning to parse xml");
+//					event = eventHandler.getEvent(token);
+//					log.debug("beginning to process order");
+//					EventProcessor ev = new StatusSubscriptionEventProcessor();
+//					EventResult eventResult = eventHandler.processEvent(event,
+//							subscriptionDAO, ev);
+//
+//					return eventResult;
+//				} catch (OAuthMessageSignerException
+//						| OAuthExpectationFailedException
+//						| OAuthCommunicationException | IOException
+//						| JAXBException e) {
+//
+//					log.error("Error processing event", e);
+//					EventResult eventResult = new EventResult();
+//					eventResult.setSuccess(false);
+//					eventResult.setMessage("Error processing event");
+//					eventResult.setErrorCode("CONFIGURATION_ERROR");
+//					return eventResult;
+//				}
+//			} else {
+//				EventResult eventResult = new EventResult();
+//				eventResult.setSuccess(false);
+//				eventResult.setMessage("Caller not authorized to use service");
+//				eventResult.setErrorCode("CONFIGURATION_ERROR");
+//				return eventResult;
+//			}
+//
+//		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+//			log.error("Error processing event", e1);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error loading keys");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
+		
+		EventProcessor eventProcessor = new StatusSubscriptionEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "SUBSCRIPTION_NOTICE");
 	}
 
 	@RequestMapping(value = "/assign", method = RequestMethod.GET)
@@ -270,51 +236,54 @@ public class SubscriptionController {
 
 		log.debug("Status Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
-		Properties prop = new Properties();
-
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty("user_assign_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new UserAssignmentEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
-
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
+//		Properties prop = new Properties();
+//
+//		try {
+//			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+//			OAuthService oAuthService = new OAuthService();
+//			if (oAuthService.verifySignature(authorizationHeader,
+//					prop.getProperty("ROOT_URL") + prop.getProperty("user_assign_url"), token)) {
+//				Event event;
+//				try {
+//					log.debug("beginning to parse xml");
+//					event = eventHandler.getEvent(token);
+//					log.debug("beginning to process order");
+//					EventProcessor ev = new UserAssignmentEventProcessor();
+//					EventResult eventResult = eventHandler.processEvent(event,
+//							subscriptionDAO, ev);
+//
+//					return eventResult;
+//				} catch (OAuthMessageSignerException
+//						| OAuthExpectationFailedException
+//						| OAuthCommunicationException | IOException
+//						| JAXBException e) {
+//
+//					log.error("Error processing event", e);
+//					EventResult eventResult = new EventResult();
+//					eventResult.setSuccess(false);
+//					eventResult.setMessage("Error processing event");
+//					eventResult.setErrorCode("CONFIGURATION_ERROR");
+//					return eventResult;
+//				}
+//			} else {
+//				EventResult eventResult = new EventResult();
+//				eventResult.setSuccess(false);
+//				eventResult.setMessage("Caller not authorized to use service");
+//				eventResult.setErrorCode("CONFIGURATION_ERROR");
+//				return eventResult;
+//			}
+//
+//		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+//			log.error("Error processing event", e1);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error loading keys");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
+		
+		EventProcessor eventProcessor = new UserAssignmentEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "USER_ASSIGNMENT");
 	}
 
 	@RequestMapping(value = "/unassign", method = RequestMethod.GET)
@@ -324,51 +293,54 @@ public class SubscriptionController {
 
 		log.debug("Status Endpoint");
 		log.debug("TOKEN PASSED IS: " + token);
-		Properties prop = new Properties();
-
-		try {
-			prop.load(getClass().getResourceAsStream("/consumer.properties"));
-			OAuthService oAuthService = new OAuthService();
-			if (oAuthService.verifySignature(authorizationHeader,
-					prop.getProperty("ROOT_URL") + prop.getProperty("user_unassign_url"), token)) {
-				Event event;
-				try {
-					log.debug("beginning to parse xml");
-					event = eventHandler.getEvent(token);
-					log.debug("beginning to process order");
-					EventProcessor ev = new UserUnassignmentEventProcessor();
-					EventResult eventResult = eventHandler.processEvent(event,
-							subscriptionDAO, ev);
-
-					return eventResult;
-				} catch (OAuthMessageSignerException
-						| OAuthExpectationFailedException
-						| OAuthCommunicationException | IOException
-						| JAXBException e) {
-
-					log.error("Error processing event", e);
-					EventResult eventResult = new EventResult();
-					eventResult.setSuccess(false);
-					eventResult.setMessage("Error processing event");
-					eventResult.setErrorCode("CONFIGURATION_ERROR");
-					return eventResult;
-				}
-			} else {
-				EventResult eventResult = new EventResult();
-				eventResult.setSuccess(false);
-				eventResult.setMessage("Caller not authorized to use service");
-				eventResult.setErrorCode("CONFIGURATION_ERROR");
-				return eventResult;
-			}
-
-		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
-			log.error("Error processing event", e1);
-			EventResult eventResult = new EventResult();
-			eventResult.setSuccess(false);
-			eventResult.setMessage("Error loading keys");
-			eventResult.setErrorCode("CONFIGURATION_ERROR");
-			return eventResult;
-		}
+//		Properties prop = new Properties();
+//
+//		try {
+//			prop.load(getClass().getResourceAsStream("/consumer.properties"));
+//			OAuthService oAuthService = new OAuthService();
+//			if (oAuthService.verifySignature(authorizationHeader,
+//					prop.getProperty("ROOT_URL") + prop.getProperty("user_unassign_url"), token)) {
+//				Event event;
+//				try {
+//					log.debug("beginning to parse xml");
+//					event = eventHandler.getEvent(token);
+//					log.debug("beginning to process order");
+//					EventProcessor ev = new UserUnassignmentEventProcessor();
+//					EventResult eventResult = eventHandler.processEvent(event,
+//							subscriptionDAO, ev);
+//
+//					return eventResult;
+//				} catch (OAuthMessageSignerException
+//						| OAuthExpectationFailedException
+//						| OAuthCommunicationException | IOException
+//						| JAXBException e) {
+//
+//					log.error("Error processing event", e);
+//					EventResult eventResult = new EventResult();
+//					eventResult.setSuccess(false);
+//					eventResult.setMessage("Error processing event");
+//					eventResult.setErrorCode("CONFIGURATION_ERROR");
+//					return eventResult;
+//				}
+//			} else {
+//				EventResult eventResult = new EventResult();
+//				eventResult.setSuccess(false);
+//				eventResult.setMessage("Caller not authorized to use service");
+//				eventResult.setErrorCode("CONFIGURATION_ERROR");
+//				return eventResult;
+//			}
+//
+//		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException e1) {
+//			log.error("Error processing event", e1);
+//			EventResult eventResult = new EventResult();
+//			eventResult.setSuccess(false);
+//			eventResult.setMessage("Error loading keys");
+//			eventResult.setErrorCode("CONFIGURATION_ERROR");
+//			return eventResult;
+//		}
+		
+		EventProcessor eventProcessor = new UserUnassignmentEventProcessor();
+		return eventHandler.processEvent(eventProcessor, authorizationHeader, token, subscriptionDAO, "USER_UNASSIGNMENT");
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
