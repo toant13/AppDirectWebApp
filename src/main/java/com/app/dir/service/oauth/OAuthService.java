@@ -82,9 +82,6 @@ public class OAuthService {
 						+ URLEncoder.encode(
 								URLEncoder.encode(tokenUrlString, ENC), ENC));
 
-		
-		log.debug("BASE STRING!!!: "+ baseString.toString());
-		
 		String keyString = URLEncoder.encode(
 				prop.getProperty("consumer-secret"), ENC) + '&';
 
@@ -133,16 +130,10 @@ public class OAuthService {
 				.equals(oAuthMap.get("OAuth oauth_consumer_key")))) {
 			return false;
 		} else {
-//			generateSignature(oAuthMap, baseUrlString, tokenUrlString).equals(
-//					oAuthMap.get("oauth_signature"));
-			
 			log.debug("SIZEOFMAP: " + oAuthMap.size());
-			
-			String generated = generateSignature(oAuthMap, baseUrlString, tokenUrlString);
-			String given = oAuthMap.get("oauth_signature");
-			log.debug("GENERATED!!!!:" + generated);
-			log.debug("GIVEN!!!!: " + given);
-			return generated.equals(given);
+
+			return generateSignature(oAuthMap, baseUrlString, tokenUrlString)
+					.equals(oAuthMap.get("oauth_signature"));
 		}
 	}
 }
