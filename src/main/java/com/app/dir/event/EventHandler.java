@@ -41,26 +41,30 @@ public class EventHandler {
 		}
 	}
 
-	public EventResult processEvent(EventProcessor eventProcessor, String authorizationHeader, String token, SubscriptionDao subscriptionDAO, String eventType){
-		Properties prop = new Properties();
+	public EventResult processEvent(EventProcessor eventProcessor,
+			String authorizationHeader, String token,
+			SubscriptionDao subscriptionDAO, String eventType) {
 		try {
 			OAuthService oAuthService = new OAuthService();
-			String urlString = prop.getProperty("ROOT_URL") + prop.getProperty(eventType);
-			
+			String urlString = prop.getProperty("ROOT_URL")
+					+ prop.getProperty(eventType);
+
 			log.debug("URL STRING IS: " + urlString);
-			
-			if (oAuthService.verifySignature(authorizationHeader,
-					urlString , token)) {
+
+			if (oAuthService.verifySignature(authorizationHeader, urlString,
+					token)) {
 				Event event;
 				try {
 					log.debug("beginning to unmarshall xml");
 					event = getEvent(token);
-					
-					if(event.getType().equals(eventType)){
+
+					if (event.getType().equals(eventType)) {
 						log.debug("beginning to process order");
-						EventResult eventResult = eventProcessor.processEvent(event, subscriptionDAO);
+						EventResult eventResult = eventProcessor.processEvent(
+								event, subscriptionDAO);
 						return eventResult;
-					} else { //incorrect event type in xml for the endpoint used
+					} else { // incorrect event type in xml for the endpoint
+								// used
 						EventResult eventResult = new EventResult();
 						eventResult.setSuccess(false);
 						eventResult.setMessage("Error processing event");
@@ -97,26 +101,29 @@ public class EventHandler {
 		}
 
 	}
-	
-	
+
 	// TODO: update this to make sure coming from correct endpoint
-	public EventResult processEvent(Event event, SubscriptionDao dao, EventProcessor eventProcessor) {
+	public EventResult processEvent(Event event, SubscriptionDao dao,
+			EventProcessor eventProcessor) {
 		return eventProcessor.processEvent(event, dao);
 	}
 
 	// TODO: clean up exceptions, add exceptions
-	public Event getEvent(String urlString) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, JAXBException {
+	public Event getEvent(String urlString) throws IOException,
+			OAuthMessageSignerException, OAuthExpectationFailedException,
+			OAuthCommunicationException, JAXBException {
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
-				prop.getProperty("consumer-key"), prop.getProperty("consumer-secret"));
+				prop.getProperty("consumer-key"),
+				prop.getProperty("consumer-secret"));
 
 		log.debug("GETTING XML FROM APP DIRECT");
-		
+
 		URL url = new URL(urlString);
 
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 		consumer.sign(request);
 		request.connect();
-		
+
 		JAXBContext jc = JAXBContext.newInstance(Event.class);
 		log.debug("CONNECTING GETTING INPUT STREAM");
 		InputStream xml = request.getInputStream();
@@ -126,6 +133,5 @@ public class EventHandler {
 		return event;
 
 	}
-	
 
 }
